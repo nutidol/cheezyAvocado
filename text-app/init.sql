@@ -5,4 +5,5 @@ CREATE TABLE Customer (
 );
 
 INSERT INTO Customer (customerID, customerFirstName, customerLastName)
-VALUES  ('001', 'Cheezy','Avocado');
+VALUES  ('001', 'Cheezy','Avocado'),
+        ('002', 'Nattharika','Saetang');
