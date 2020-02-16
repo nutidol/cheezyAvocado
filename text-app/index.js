@@ -13,8 +13,8 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 
-const getBooks = (request, response) => {
-  pool.query('SELECT * FROM books', (error, results) => {
+const getCustomers = (request, response) => {
+  pool.query('SELECT * FROM Customer', (error, results) => {
     if (error) {
       throw error
     }
@@ -22,23 +22,23 @@ const getBooks = (request, response) => {
   })
 }
 
-const addBook = (request, response) => {
-  const { author, title } = request.body
+const addCustomer = (request, response) => {
+  const { customerID, customerFirstName, customerLastName } = request.body
 
-  pool.query('INSERT INTO books (author, title) VALUES ($1, $2)', [author, title], error => {
+  pool.query('INSERT INTO Customer (customerID, customerFirstName, customerLastName) VALUES ($1, $2, $3)', [customerID, customerFirstName, customerLastName], error => {
     if (error) {
       throw error
     }
-    response.status(201).json({ status: 'success', message: 'Book added.' })
+    response.status(201).json({ status: 'success', message: 'Customer added.' })
   })
 }
 
 app
-  .route('/books')
+  .route('/customers')
   // GET endpoint
-  .get(getBooks)
+  .get(getCustomers)
   // POST endpoint
-  .post(addBook)
+  .post(addCustomer)
 
 // Start server
 app.listen(process.env.PORT || 3002, () => {

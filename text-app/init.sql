@@ -1,8 +1,8 @@
-CREATE TABLE books (
-  ID SERIAL PRIMARY KEY,
-  author VARCHAR(255) NOT NULL,
-  title VARCHAR(255) NOT NULL
+CREATE TABLE Customer (
+  customerID SERIAL PRIMARY KEY,
+  customerFirstName VARCHAR(255) NOT NULL,
+  customerLastName VARCHAR(255) NOT NULL
 );
 
-INSERT INTO books (author, title)
-VALUES  ('J.K. Rowling', 'Harry Potter');
+INSERT INTO Customer (customerID, customerFirstName, customerLastName)
+VALUES  ('001', 'Cheezy','Avocado');
