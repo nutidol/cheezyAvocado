@@ -2,12 +2,16 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const { pool } = require('./config')
+const helmet = require('helmet')
+const compression = require('compression')
 
 const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
+app.use(compression())
+app.use(helmet())
 
 const getBooks = (request, response) => {
   pool.query('SELECT * FROM books', (error, results) => {
