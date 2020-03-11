@@ -4,6 +4,7 @@ const cors = require('cors')
 const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
+const Avocabot = require('./classes/avocabot.js')
 
 const app = express()
 
@@ -12,6 +13,17 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
+
+//Server algorithm
+var avocabot = Avocabot("M","N")
+var orderQueue = []
+while(true) {
+  if(orderQueue != 0) {
+    firstOrder = orderQueue[0]
+    
+  }
+}
+
 
 const getCustomers = (request, response) => {
   pool.query('SELECT * FROM Customer', (error, results) => {
