@@ -16,3 +16,5 @@ class Avocabot {
 
     }
 }
+
+module.exports = Avocabot

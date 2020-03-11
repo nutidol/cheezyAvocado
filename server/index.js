@@ -4,7 +4,8 @@ const cors = require('cors')
 const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
-const Avocabot = require('./classes/avocabot.js')
+const Avocabot = require('./classes/avocabot')
+const Order = require('./classes/order')
 
 const app = express()
 
@@ -15,14 +16,16 @@ app.use(compression())
 app.use(helmet())
 
 //Server algorithm
-var avocabot = Avocabot("M","N")
+let avocabot = new Avocabot("M","N")
 var orderQueue = []
-while(true) {
-  if(orderQueue != 0) {
-    firstOrder = orderQueue[0]
-    
-  }
-}
+mockOrder = new Order('1111','Kitchen','109')
+orderQueue.push(mockOrder)
+// while(true) {
+//   if(orderQueue != 0) {
+//     firstOrder = orderQueue[0]
+//     console.log(firstOrder.orderID)
+//   }
+// }
 
 
 const getCustomers = (request, response) => {

@@ -1,7 +1,9 @@
 class Order {
-    constructor(orderID, department, roomNumber) {
+    constructor(orderID, departmentName, roomNumber) {
         this.orderID = orderID
-        this.department = department
+        this.departmentName = departmentName
         this.roomNumber = roomNumber
     }
 }
+
+module.exports = Order
