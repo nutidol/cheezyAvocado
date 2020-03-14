@@ -15,19 +15,6 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 
-//Server algorithm
-let avocabot = new Avocabot("M","N")
-var orderQueue = []
-mockOrder = new Order('1111','Kitchen','109')
-orderQueue.push(mockOrder)
-// while(true) {
-//   if(orderQueue != 0) {
-//     firstOrder = orderQueue[0]
-//     console.log(firstOrder.orderID)
-//   }
-// }
-
-
 const getCustomers = (request, response) => {
   pool.query('SELECT * FROM Customer', (error, results) => {
     if (error) {
