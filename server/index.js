@@ -12,7 +12,7 @@ const staffRoutes = require('./routes/staffRoutes');
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
-const queryExample = require('./test/query-example');
+const queryExample = require('./test/queryExample');
 
 const app = express();
 
