@@ -7,7 +7,11 @@ const compression = require('compression')
 
 const customerRoutes = require('./routes/customerRoutes');
 const authentication = require('./routes/authentication');
+<<<<<<< HEAD
 const menu = require('./routes/menu');
+=======
+const staffRoutes = require('./routes/staffRoutes');
+>>>>>>> origin/with-docker
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
@@ -23,7 +27,7 @@ app.use(helmet())
 app.use('/customers', customerRoutes);
 app.use('/authen', authentication)
 app.use('/menu', menu);
-
+app.use('/staffs', staffRoutes);
 
 //---Server logic---
 //Variable initialization
