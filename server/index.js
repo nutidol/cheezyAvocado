@@ -15,56 +15,40 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 
-// example
-const getCustomers = (request, response) => {
-  pool.query('SELECT * FROM Customer', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-const addCustomer = (request, response) => {
-  const { customerID, customerFirstName, customerLastName } = request.body
-
-  pool.query('INSERT INTO Customer (customerID, customerFirstName, customerLastName) VALUES ($1, $2, $3)', [customerID, customerFirstName, customerLastName], error => {
-    if (error) {
-      throw error
-    }
-    response.status(201).json({ status: 'success', message: 'Customer added.' })
-  })
-}
-
-app
-  .route('/customers')
-  // GET endpoint
-  .get(getCustomers)
-  // POST endpoint
-  .post(addCustomer)
-
-//server logic
-let orderQueue = []
-
-let observe = (obj, fn) => new Proxy(obj, {
-  set(obj, key, val) {
-      obj[key] = val;
-      fn(obj)
+//---Server logic---
+//Variable initialization
+var arrayChangeHandler = {
+  set: function(target, property, value, receiver) {
+    console.log("arrayChangeHandler called")
+    var currentOrder = orderQueue[0]
+    processOrder(currentOrder)
+    target[property] = value;
+    return true;
   }
-});
+};
+var orderQueue = new Proxy([], arrayChangeHandler);
+var pointer;
+var avocabot = new Avocabot('117','E');
 
-arr = observe(orderQueue, arr => {
-  console.log('arr changed! ', arr)
-});
+function processOrder(order) {
+  if(order == null || order == undefined) return;
+  if(pointer == null) {
+    pointer = order
+    let department = order.departmentName
+    avocabot.goTo(department)
+  }
+}
 
-app.get('/arrayChangeTest',(req,res) => {
-  order = new Order('1111','Kitchen','3037')
+//API
+app.get('/placeOrder',(req,res) => {
+  let order = new Order('1111','Kitchen','1084')
   orderQueue.push(order)
-  res.send('Test')
+  res.send("Added!")
 })
 
-app.get('/getFoods', (req,res) => {
-  res.send('Mock response')
+app.get('/removeOrder',(req,res) => {
+  orderQueue.pop()
+  res.send("Removed!")
 })
 
 // Start server
