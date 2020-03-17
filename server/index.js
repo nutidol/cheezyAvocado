@@ -5,6 +5,7 @@ const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
 const customerRoutes = require('./routes/customerRoutes');
+const authentication = require('./routes/authentication');
 const morgan = require('morgan');
 
 const app = express()
@@ -16,6 +17,7 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 app.use('/customers', customerRoutes);
+app.use('/authen', authentication)
 
 const getCustomers = (request, response) => {
   pool.query('SELECT * FROM Customer', (error, results) => {
