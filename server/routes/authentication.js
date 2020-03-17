@@ -61,3 +61,4 @@ router.get('/getService', authenticatedJWT, (req,res) =>{ //return serviceAvaila
 });
 
 module.exports = router;
+module.exports = router;
