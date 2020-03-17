@@ -4,9 +4,12 @@ const cors = require('cors')
 const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
+
 const customerRoutes = require('./routes/customerRoutes');
 const authentication = require('./routes/authentication');
 const morgan = require('morgan');
+const Avocabot = require('./classes/avocabot')
+const Order = require('./classes/order')
 
 const app = express()
 
@@ -19,24 +22,28 @@ app.use(helmet())
 app.use('/customers', customerRoutes);
 app.use('/authen', authentication)
 
-const getCustomers = (request, response) => {
-  pool.query('SELECT * FROM Customer', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
+//---Server logic---
+//Variable initialization
+var arrayChangeHandler = {
+  set: function(target, property, value, receiver) {
+    console.log("arrayChangeHandler called")
+    var currentOrder = orderQueue[0]
+    processOrder(currentOrder)
+    target[property] = value;
+    return true;
+  }
+};
+var orderQueue = new Proxy([], arrayChangeHandler);
+var pointer;
+var avocabot = new Avocabot('117','E');
 
-const addCustomer = (request, response) => {
-  const { customerID, customerFirstName, customerLastName } = request.body
-
-  pool.query('INSERT INTO Customer (customerID, customerFirstName, customerLastName) VALUES ($1, $2, $3)', [customerID, customerFirstName, customerLastName], error => {
-    if (error) {
-      throw error
-    }
-    response.status(201).json({ status: 'success', message: 'Customer added.' })
-  })
+function processOrder(order) {
+  if(order == null || order == undefined) return;
+  if(pointer == null) {
+    pointer = order
+    let department = order.departmentName
+    avocabot.goTo(department)
+  }
 }
 // test api
 app.get('/' , (req, res, next) => {
@@ -44,14 +51,21 @@ app.get('/' , (req, res, next) => {
 });
 
 
-app
-  .route('/customerss')
-  // GET endpoint
-  .get(getCustomers)
-  // POST endpoint
-  .post(addCustomer)
+
+
+app.get('/placeOrder',(req,res) => {
+  let order = new Order('1111','Kitchen','1084')
+  orderQueue.push(order)
+  res.send("Added!")
+})
+
+app.get('/removeOrder',(req,res) => {
+  orderQueue.pop()
+  res.send("Removed!")
+})
+
 
 // Start server
-app.listen(process.env.PORT || 3002, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log(`Server listening`)
 })

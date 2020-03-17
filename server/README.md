@@ -1,1 +1,2 @@
-# chat-app
+# Note
+- How to structure the server?
