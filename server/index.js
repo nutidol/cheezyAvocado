@@ -15,8 +15,9 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 
+// example
 const getCustomers = (request, response) => {
-  pool.query('SELECT * FROM customer', (error, results) => {
+  pool.query('SELECT * FROM Customer', (error, results) => {
     if (error) {
       throw error
     }
@@ -41,6 +42,30 @@ app
   .get(getCustomers)
   // POST endpoint
   .post(addCustomer)
+
+//server logic
+let orderQueue = []
+
+let observe = (obj, fn) => new Proxy(obj, {
+  set(obj, key, val) {
+      obj[key] = val;
+      fn(obj)
+  }
+});
+
+arr = observe(orderQueue, arr => {
+  console.log('arr changed! ', arr)
+});
+
+app.get('/arrayChangeTest',(req,res) => {
+  order = new Order('1111','Kitchen','3037')
+  orderQueue.push(order)
+  res.send('Test')
+})
+
+app.get('/getFoods', (req,res) => {
+  res.send('Mock response')
+})
 
 // Start server
 app.listen(process.env.PORT || 3000, () => {
