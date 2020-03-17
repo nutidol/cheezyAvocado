@@ -7,6 +7,7 @@ const compression = require('compression')
 
 const customerRoutes = require('./routes/customerRoutes');
 const authentication = require('./routes/authentication');
+const staffRoutes = require('./routes/staffRoutes');
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
@@ -20,7 +21,8 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 app.use('/customers', customerRoutes);
-app.use('/authen', authentication)
+app.use('/authen', authentication);
+app.use('/staffs', staffRoutes);
 
 //---Server logic---
 //Variable initialization
