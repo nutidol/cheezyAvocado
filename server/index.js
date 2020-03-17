@@ -5,7 +5,7 @@ const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
 
-const customerRoutes = require('./routes/customerRoutes');
+const customerRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
 const menu = require('./routes/menu');
 const staffRoutes = require('./routes/staffRoutes');
