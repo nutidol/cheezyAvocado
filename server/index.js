@@ -12,6 +12,7 @@ const staffRoutes = require('./routes/staffRoutes');
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
+const queryExample = require('./test/query-example');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/customers', customerRoutes);
 app.use('/authen', authentication)
 app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
+app.use('/queryEx', queryExample);
 
 //---Server logic---
 //Variable initialization

@@ -1,4 +1,9 @@
 // query example
+const express = require('express');
+const router = express.Router();
+const { pool } = require('../config')
+
+
 const getCustomers = (request, response) => {
     pool.query('SELECT * FROM Customer', (error, results) => {
       if (error) {
@@ -6,7 +11,7 @@ const getCustomers = (request, response) => {
       }
       response.status(200).json(results.rows)
     })
-}
+
   
 const addCustomer = (request, response) => {
     const { customerID, customerFirstName, customerLastName } = request.body
@@ -19,10 +24,11 @@ const addCustomer = (request, response) => {
     })
 }
   
-  app
+  router
     .route('/customers')
     // GET endpoint
     .get(getCustomers)
     // POST endpoint
     .post(addCustomer)
-  
+
+module.exports = router;
