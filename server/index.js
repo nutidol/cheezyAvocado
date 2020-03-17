@@ -7,12 +7,14 @@ const compression = require('compression')
 
 const customerRoutes = require('./routes/customerRoutes');
 const authentication = require('./routes/authentication');
+const menu = require('./routes/menu');
 const staffRoutes = require('./routes/staffRoutes');
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
+const queryExample = require('./test/query-example');
 
-const app = express()
+const app = express();
 
 app.use(morgan('dev'));
 app.use(bodyParser.json())
@@ -21,8 +23,10 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 app.use('/customers', customerRoutes);
-app.use('/authen', authentication);
+app.use('/authen', authentication)
+app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
+app.use('/queryEx', queryExample);
 
 //---Server logic---
 //Variable initialization
