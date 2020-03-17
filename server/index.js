@@ -4,14 +4,18 @@ const cors = require('cors')
 const { pool } = require('./config')
 const helmet = require('helmet')
 const compression = require('compression')
+const customerRoutes = require('./routes/customerRoutes');
+const morgan = require('morgan');
 
 const app = express()
 
+app.use(morgan('dev'));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
+app.use('/customers', customerRoutes);
 
 const getCustomers = (request, response) => {
   pool.query('SELECT * FROM Customer', (error, results) => {
@@ -32,9 +36,14 @@ const addCustomer = (request, response) => {
     response.status(201).json({ status: 'success', message: 'Customer added.' })
   })
 }
+// test api
+app.get('/' , (req, res, next) => {
+  res.send('hello');
+});
+
 
 app
-  .route('/customers')
+  .route('/customerss')
   // GET endpoint
   .get(getCustomers)
   // POST endpoint
