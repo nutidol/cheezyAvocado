@@ -1,2 +1,2 @@
-# Note
-- How to structure the server?
+# Backend Documentation
+- Write documentation here
