@@ -1,10 +1,11 @@
+const Graph = require('./graph/graph')
+require('./../global')
+
 class Avocabot {
     constructor(currentPosition, currentDirection) {
       this.currentPosition = currentPosition;
       this.currentDirection = currentDirection;
-      this.hotelMap = {
-
-      }
+      this.hotelMap = global.hotelMap;
     }
     turnLeft() {
     
