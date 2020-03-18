@@ -48,7 +48,7 @@ function processOrder(order) {
   if(pointer == null) {
     pointer = order
     let department = order.departmentName
-    avocabot.goTo(department)
+    //avocabot.goTo(department)
   }
 }
 // test api
