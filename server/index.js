@@ -70,8 +70,12 @@ app.get('/removeOrder',(req,res) => {
   res.send("Removed!")
 })
 
+app.get('*',(req,res) => {
+  res.send("Page Not Found!")
+})
+
 
 // Start server
 app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server listening`)
+  console.log(`Server listening`,3000)
 })
