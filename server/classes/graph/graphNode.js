@@ -3,5 +3,6 @@ class GraphNode {
         this.value = value
         this.neighbors = neighbors
     }
-    
 }
+
+module.exports = GraphNode

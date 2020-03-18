@@ -1,6 +1,7 @@
 class Graph {
-    constructor(root, neighbors) {
-        this.root = root
-        this.neighbors = neighbors
+    constructor(nodes) {
+        this.node = nodes
     }
 }
+
+module.exports = Graph
