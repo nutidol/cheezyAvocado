@@ -5,7 +5,7 @@ const { pool } = require('../config')
 
 
 const getCustomers = (request, response) => {
-  pool.query('SELECT * FROM Customer', (error, results) => {
+  pool.query('SELECT * FROM guest', (error, results) => {
     if (error) {
       throw error
     }
@@ -30,5 +30,9 @@ router
   .get(getCustomers)
   // POST endpoint
   .post(addCustomer)
+
+router.get('/', (req,res) =>{
+  res.send('in queryExample route');
+})
 
 module.exports = router;

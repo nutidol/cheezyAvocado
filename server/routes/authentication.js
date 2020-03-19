@@ -4,9 +4,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
-
-const app = express(); 
-app.use(bodyParser.json());
+router.use(bodyParser.json());
 
 
 const accessTokenSecret = 'tdJSPrqg3njs38B77KqT';
@@ -46,7 +44,7 @@ router.post('/guest', (req,res) =>{ //return customerID
     // query the stay in table for the roomNumber, lastName ans password -> based on the room number 
     console.log(req.body);
     const checkInDate = '2020-03-17';
-    const checkOutDate = '2020-03-18';
+    const checkOutDate = '2020-03-31';
     const validateGuest = true;
     if(validateGuest){
         const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate}, accessTokenSecret)
