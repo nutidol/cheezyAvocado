@@ -41,16 +41,19 @@ var arrayChangeHandler = {
 };
 var orderQueue = new Proxy([], arrayChangeHandler);
 var pointer;
-var avocabot = new Avocabot('117','E');
+var avocabot = new Avocabot('116','E');
 
 function processOrder(order) {
   if(order == null || order == undefined) return;
-  if(pointer == null) {
-    pointer = order
-    let department = order.departmentName
-    //avocabot.goTo(department)
+  if(pointer == null || pointer == undefined) {
+    pointer = order;
+    let department = order.departmentName;
+    avocabot.goTo(department);
+    
   }
 }
+
+avocabot.calculateRoute('101');
 // test api
 app.get('/' , (req, res, next) => {
   res.send('hello');
