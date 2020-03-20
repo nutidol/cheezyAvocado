@@ -23,7 +23,7 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 app.use('/customers', customerRoutes);
-app.use('/authen', authentication)
+app.use('/authen', authentication.router)
 app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
 app.use('/queryEx', queryExample);
