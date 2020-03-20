@@ -8,6 +8,7 @@ router.use(bodyParser.json());
 
 
 const accessTokenSecret = 'tdJSPrqg3njs38B77KqT';
+const accessTokenSecretStaff = 'fCS12BCZyHywpp2VS5Yz';
 
 const authenticatedJWT = (req,res,next) => {
     const authHeader = req.headers.authorization;
@@ -112,9 +113,52 @@ router.post('/guest', (req,res) =>{ //return customerID
     // }
 });
 
+const authenticatedStaff = (req,res,next) => {
+    const authHeader = req.headers.authorization;
+    if(authHeader){
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, accessTokenSecretStaff, (err, user) =>{
+            if(err){
+                return res.sendStatus(403);
+            }
+            next();
+        })
+    }else{
+        res.sendStatus(401);
+    }
+}
+
+router.post('/staff', (req,res) =>{
+    const {department, password} = req.body;
+    const query = 'SELECT * FROM department,room WHERE \"departmentName\"=\''+department+'\'';
+
+    pool.query(query, (error, results) => {
+        if (error) {
+          throw error
+        }
+        if(results.rows[0]){
+            const {departmentName, departmentID} = results.rows[0];
+            const departmentPassword = results.rows[0].password;
+            if(departmentName == department && password == departmentPassword){
+                const accessToken = jwt.sign({departmentID: departmentID, department: department}, accessTokenSecretStaff)
+                res.json({accessToken});
+            }else{
+                res.send('Incorrect data');
+            }
+        }else{
+            res.send('Incorrect data');
+        }
+    })
+    
+});
+
 router.get('/getService', authenticatedJWT, (req,res) =>{ //return serviceAvailable
     res.send("authenWorkla")
 });
 
-module.exports = {router, authenticatedJWT};
+router.get('/staffAuth', authenticatedStaff, (req,res) =>{
+    res.send('staff authen works')
+});
+
+module.exports = {router, authenticatedJWT, authenticatedStaff};
 
