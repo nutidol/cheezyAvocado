@@ -1,5 +1,6 @@
 const express = require('express');
 const { pool } = require('../config')
+const authen = require('./authentication');
 
 const router = express.Router();
 
@@ -7,17 +8,29 @@ router.get('/',(req,res)=>{
     res.send('in route menu')
 })
 
-router.get('/getFoods',(req,res)=>{
+router.get('/getFoods', authen.authenticatedJWT, (req,res)=>{
     pool.query('SELECT * FROM food', (error, results) => {
         if (error) {
           throw error
         }
+        console.log(results);
+        res.status(200).json(results.rows)
+      })
+});
+
+//allow you to get food without authentication, for testing only
+router.get('/getFoodsWithOutAuthen', (req,res)=>{           
+    pool.query('SELECT * FROM food', (error, results) => {
+        if (error) {
+          throw error
+        }
+        console.log(results);
         res.status(200).json(results.rows)
       })
 });
 
 router.post('/addFoods',(req,res)=>{
-    const query = 'INSERT INTO food (foodID, foodName, price, foodImage) VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
+    const query = 'INSERT INTO food ("foodID", "foodName", "price", "foodImage") VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
     pool.query(query, (error, results) => {
         if (error) {
           throw error
@@ -26,11 +39,12 @@ router.post('/addFoods',(req,res)=>{
     })
 });
 
-router.get('/getAmenities',(req,res)=>{
+router.get('/getAmenities', authen.authenticatedJWT, (req,res)=>{
     pool.query('SELECT * FROM amenity', (error, results) => {
         if (error) {
           throw error
         }
+        console.log(results);
         res.status(200).json(results.rows)
       })
 });
