@@ -13,17 +13,20 @@ class Avocabot {
     turnRight() {
 
     }
-    walkStraight() {
+    forward(distance) {
 
     }
-    changeDirection() {
+    backward(distance) {
+
+    }
+    reverseDirection() {
 
     }
     goTo(destination) {
-      pathList = this.findPath(destination);
+      let route = this.calculateRoute(destination);
       //tell avocabot to walk according to this path. 
     }
-    findPath(destination) {
+    calculateRoute(destination) {
       return [];
     }
 }
