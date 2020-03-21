@@ -7,8 +7,8 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 
-const accessTokenSecret = 'tdJSPrqg3njs38B77KqT';
-const accessTokenSecretStaff = 'fCS12BCZyHywpp2VS5Yz';
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const accessTokenSecretStaff = process.env.ACCESS_TOKEN_SECRET_STAFF;
 
 const authenticatedJWT = (req,res,next) => {
     const authHeader = req.headers.authorization;
