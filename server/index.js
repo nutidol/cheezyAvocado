@@ -53,7 +53,7 @@ function processOrder(order) {
   }
 }
 
-avocabot.calculateRoute('101');
+// avocabot.calculateRoute('101');
 // test api
 app.get('/' , (req, res, next) => {
   res.send('hello');
