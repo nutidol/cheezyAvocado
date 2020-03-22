@@ -1,11 +1,6 @@
 const express = require('express');
-<<<<<<< HEAD
 const { pool } = require('../config/config')
-=======
-const { pool } = require('../config')
 const authen = require('./authentication');
->>>>>>> a44f2cace3590fed21137e3607eda7da516686e0
-
 const router = express.Router();
 
 router.get('/',(req,res)=>{

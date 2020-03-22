@@ -47,14 +47,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
-<<<<<<< HEAD
+
 //app.use('/guests', guestRoutes);
 //app.use('/socketEvent', socketEvent)
-app.use('/authen', authentication)
-=======
-app.use('/customers', customerRoutes);
+
 app.use('/authen', authentication.router)
->>>>>>> a44f2cace3590fed21137e3607eda7da516686e0
 app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
 app.use('/queryEx', queryExample);
@@ -104,12 +101,8 @@ var arrayChangeHandler = {
 };
 var orderQueue = new Proxy([], arrayChangeHandler);
 var pointer;
-<<<<<<< HEAD
-var avocabot = new Avocabot('117','E'); 
-=======
-var avocabot = new Avocabot('116','E');
 
->>>>>>> a44f2cace3590fed21137e3607eda7da516686e0
+var avocabot = new Avocabot('116','E');
 function processOrder(order) {
   if(order == null || order == undefined) return;
   if(pointer == null || pointer == undefined) {
@@ -119,17 +112,13 @@ function processOrder(order) {
     
   }
 }
-<<<<<<< HEAD
-=======
+
 
 // avocabot.calculateRoute('101');
 // test api
 app.get('/' , (req, res, next) => {
   res.send('hello');
 });
-
-
->>>>>>> a44f2cace3590fed21137e3607eda7da516686e0
 
 
 app.get('/placeOrder',(req,res) => {

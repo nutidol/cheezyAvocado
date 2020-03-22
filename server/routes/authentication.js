@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const { pool } = require('../config')
+const { pool } = require('../config/config')
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -156,13 +156,11 @@ router.get('/getService', authenticatedJWT, (req,res) =>{ //return serviceAvaila
     res.send("authenWorkla")
 });
 
-<<<<<<< HEAD
-module.exports = router;
-=======
+
 router.get('/staffAuth', authenticatedStaff, (req,res) =>{
     res.send('staff authen works')
 });
 
 module.exports = {router, authenticatedJWT, authenticatedStaff};
->>>>>>> a44f2cace3590fed21137e3607eda7da516686e0
+
 
