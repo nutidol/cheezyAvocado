@@ -1,6 +1,9 @@
 class Graph {
     constructor(nodes) {
-        this.node = nodes
+        this.nodes = nodes;
+    }
+    breadthFirstSearch() {
+        
     }
 }
 

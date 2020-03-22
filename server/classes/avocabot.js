@@ -1,11 +1,10 @@
-const Graph = require('./graph/graph')
-require('./../global')
+const Graph = require('./graph/graph');
+require('./../global');
 
 class Avocabot {
     constructor(currentPosition, currentDirection) {
       this.currentPosition = currentPosition;
       this.currentDirection = currentDirection;
-      this.hotelMap = global.hotelMap;
     }
     turnLeft() {
     
@@ -13,19 +12,29 @@ class Avocabot {
     turnRight() {
 
     }
-    walkStraight() {
+    forward(distance) {
 
     }
-    changeDirection() {
+    backward(distance) {
+
+    }
+    reverseDirection() {
 
     }
     goTo(destination) {
-      pathList = this.findPath(destination);
+      let route = this.calculateRoute(destination);
       //tell avocabot to walk according to this path. 
     }
-    findPath(destination) {
-      return [];
+    calculateRoute(destination) {
+      let route = [];
+      let currentNode = global.node[this.currentPosition];
+      let destinationNode = global.node[destination];
+      console.log(currentNode);
+      if(currentNode == undefined) {
+        throw console.error('The destination is invalid.');
+      }
+      
     }
 }
 
-module.exports = Avocabot
+module.exports = Avocabot;
