@@ -1,5 +1,5 @@
 const express = require('express');
-const { pool } = require('../config')
+const { pool } = require('../config/config')
 
 const router = express.Router();
 
