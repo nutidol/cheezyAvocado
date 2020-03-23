@@ -5,6 +5,7 @@ const { pool } = require('./config/config');
 const helmet = require('helmet');
 const compression = require('compression');
 const app = require('./config/server').app;
+const mqtt = require('mqtt')
 
 const guestRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
