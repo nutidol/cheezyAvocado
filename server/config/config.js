@@ -10,4 +10,5 @@ const pool = new Pool({
   ssl: true, //used to be isProduction, I changed to true and it worked!, 14 March
 })
 
-module.exports = { pool }
+
+module.exports = {pool} 

@@ -1,7 +1,6 @@
 const express = require('express');
-const { pool } = require('../config')
+const { pool } = require('../config/config')
 const authen = require('./authentication');
-
 const router = express.Router();
 
 router.get('/',(req,res)=>{
