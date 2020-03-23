@@ -10,6 +10,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('http://localhost:3000/');
+            const lockerStatus=1;
 
             // socket.on('news', function (data) {
             //     var div = document.getElementById("news-list");
@@ -20,7 +21,7 @@
             //         div.innerHTML += "<h3>" + newsItem.title + ' <small>'+ newsItem.date + "</small></h3><br>";
             //     }
 
-            //     socket.emit('my other event', { my: 'data' });
+                socket.emit('openLockerStatus', lockerStatus);
             // });
         </script>
     </body>

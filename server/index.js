@@ -4,36 +4,13 @@ const cors = require('cors')
 const { pool } = require('./config/config')
 const helmet = require('helmet')
 const compression = require('compression')
-const app = express();
-const socketIO = require('socket.io');
-//const server = require('./config/server')
+const app=require('./config/server').app
 
-//app.io = require('socket.io')();
-
-
-
-// Start server
-const server=app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server listening on port 3000`)
-})
-module.exports = server;
-
-//app.io = socketIO.listen(server);
-
-
-// test socket 
-// let io = socketIO.listen(server);
-// io.on('connection',  function(socket) {
-//     console.log('user connected'); 
-//     const hi='hello'
-//     io.sockets.emit('openLockerStatusToRobot', hi); 
-// });
 
 const guestRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
 const menu = require('./routes/menu');
 const staffRoutes = require('./routes/staffRoutes');
-const socketEvent = require('./routes/socketEvent');
 const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
@@ -47,41 +24,24 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
-
-//app.use('/guests', guestRoutes);
-//app.use('/socketEvent', socketEvent)
-
+app.use('/guests', guestRoutes);
 app.use('/authen', authentication.router)
 app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
 app.use('/queryEx', queryExample);
 
-//pass parameter to guestRoutes.js
-app.use('/guests', function (req, res, next) {
-  req.parameter = {
-      param: server
-  };
-  next();
-}, guestRoutes);
-
-//pass parameter to socketEvent.js
-app.use('/socketEvent', function (req, res, next) {
-  req.parameter = {
-      param: server
-  };
-  next();
-}, socketEvent);
 
 
 
 
+// USE FOR MOCK UP HTML FILE > page.html
 // Register the index route of your app that returns the HTML file
 app.get('/', function (req, res) {
   console.log("Homepage");
   res.sendFile(__dirname + '/page.html');
 });
 
-
+// USE FOR MOCK UP HTML FILE
 // Expose the node_modules folder as static resources (to access socket.io.js in the browser)
 app.use('/static', express.static('node_modules'));
 
@@ -114,13 +74,6 @@ function processOrder(order) {
 }
 
 
-// avocabot.calculateRoute('101');
-// test api
-app.get('/' , (req, res, next) => {
-  res.send('hello');
-});
-
-
 app.get('/placeOrder',(req,res) => {
   let order = new Order('1111','Kitchen','1084')
   orderQueue.push(order)
@@ -138,4 +91,10 @@ app.get('*',(req,res) => {
 
 
 
-
+// PLS DONT DELETE!! how to pass parameter to guestRoutes.js 
+// app.use('/guests', function (req, res, next) {
+//   req.parameter = {
+//       param: server
+//   };
+//   next();
+// }, guestRoutes);

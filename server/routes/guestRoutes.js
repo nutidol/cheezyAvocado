@@ -2,19 +2,11 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const io = require('../config/socket')
+const io = require('../config/server').io
+
 // setup guest router
 const router = express.Router();
 router.use(morgan('dev'));
-var server;
-
-//receive parameter from index.js
-router.get('/receiveParameter', function(req, res) {
-    var getParameter = req.parameter;
-    server=getParameter.param;
-    res.send(server)
-  });
-
 
 
 // test route
@@ -43,21 +35,25 @@ router.post('/openRobotLocker', (req, res, next) => {
 
 //openRobotLocker
 //version2 use Socket
-// module.exports = function (io) {
-// //     //Socket.IO
-    io.on('connection', function (socket) {
-        console.log('User has connected to guestRoutes');
-            //ON Events
-        socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend 
-            io.sockets.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot
-            console.log(openLockerStatus);
-        });
-    
-            //End ON Events
+io.on('connection', function (socket) {
+    console.log('User has connected to guestRoutes');
+    //ON Events
+    socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend(receive from page.html(mockup))
+        io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
+        console.log(openLockerStatus);
     });
-//         return router;
-//     };
-
+    //End ON Events
+});
 
 
 module.exports = router;
+
+
+
+// PLS DONT DELELT , how to receive parameter from index.js
+// var server;
+// router.get('/receiveParameter', function(req, res) {
+//     var getParameter = req.parameter;
+//     server=getParameter.param;
+//     res.send(server)
+//   });
