@@ -1,7 +1,7 @@
 // query example
 const express = require('express');
 const router = express.Router();
-const { pool } = require('../config')
+const { pool } = require('../config/config')
 
 
 const getCustomers = (request, response) => {
