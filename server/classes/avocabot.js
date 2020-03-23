@@ -5,6 +5,13 @@ class Avocabot {
     constructor(currentPosition, currentDirection) {
       this.currentPosition = currentPosition;
       this.currentDirection = currentDirection;
+      this.currentOrder;
+      this.currentInstructions;
+    }
+    processOrder(order) {
+      let department = order.department;
+      let roomNumber = order.roomNumber;
+      
     }
     turnLeft() {
     
@@ -22,8 +29,8 @@ class Avocabot {
 
     }
     goTo(destination) {
-      let route = this.calculateRoute(destination);
-      //tell avocabot to walk according to this path. 
+      this.currentInstructions = this.calculateRoute(destination);
+
     }
     calculateRoute(destination) {
       let route = [];
@@ -35,6 +42,10 @@ class Avocabot {
       }
       
     }
+  
+    
 }
+
+
 
 module.exports = Avocabot;

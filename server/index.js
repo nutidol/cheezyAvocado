@@ -1,9 +1,10 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const { pool } = require('./config')
-const helmet = require('helmet')
-const compression = require('compression')
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { pool } = require('./config');
+const helmet = require('helmet');
+const compression = require('compression');
+const mqtt = require('mqtt');
 
 const customerRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
@@ -13,20 +14,23 @@ const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot')
 const Order = require('./classes/order')
 const queryExample = require('./test/queryExample');
+const avocabotRoutes = require('./routes/avocabotRoutes');
 
 const app = express();
+const client = mqtt.connect('mqtt://broker.hivemq.com')
 
 app.use(morgan('dev'));
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors())
-app.use(compression())
-app.use(helmet())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(compression());
+app.use(helmet());
 app.use('/customers', customerRoutes);
-app.use('/authen', authentication.router)
+app.use('/authen', authentication.router);
 app.use('/menu', menu);
 app.use('/staffs', staffRoutes);
 app.use('/queryEx', queryExample);
+app.use('/avocabot', avocabotRoutes);
 
 //---Server logic---
 //Variable initialization
@@ -53,14 +57,10 @@ function processOrder(order) {
   }
 }
 
-// avocabot.calculateRoute('101');
 // test api
 app.get('/' , (req, res, next) => {
   res.send('hello');
 });
-
-
-
 
 app.get('/placeOrder',(req,res) => {
   let order = new Order('1111','Kitchen','1084')
@@ -78,7 +78,10 @@ app.get('*',(req,res) => {
 })
 
 
+
 // Start server
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server listening on port 3000`)
 })
+
+module.exports.avocabot = avocabot;

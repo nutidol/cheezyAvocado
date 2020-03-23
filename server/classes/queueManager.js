@@ -6,13 +6,18 @@ class QueueManager {
     }
 
     /**
-    * This method is used to add an order to the queue.
+    * This method adds avocabot commands to the queue. It should be called when the staff clicks "call avocabot".
     * @param {Order} order 
-    * @returns {none} that number, plus one.
+    * @returns {none} 
     */
-    addDelivery(order) {
+    addDeliveryOrder(order) {
         if(this.currentOrder == undefined || this.currentOrder == null) {
-            
+            this.currentOrder = order;
+            this.processCurrentOrder();
+        }else {
+            this.orderQueue.push(order);
         }
     }
+
+
 }
