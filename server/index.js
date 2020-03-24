@@ -50,3 +50,9 @@ app.use('/static', express.static('node_modules'));
 //   };
 //   next();
 // }, guestRoutes);
+
+//Try mqtt
+client.on('connect', () => {
+  // Inform the avocabot that server is connected
+  client.publish('server/connected', 'true')
+})
