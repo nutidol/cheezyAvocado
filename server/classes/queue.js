@@ -31,13 +31,8 @@ class Queue {
 
     retrieveFromQueue() {
         this.queue.shift();
-        if(this.queue.length == 0) {
-            let destination = new Destination('116',this.purpose.GOHOME,null);
-            avocabot.goTo(destination);
-        }else{
-            let currentItem = this.queue[0];
-            goTo(currentItem);
-        }
+        let destination = (this.queue.length == 0 ) ? new Destination('116',this.purpose.GOHOME,null) : this.queue[0];
+        avocabot.goTo(destination);
     }
 
 }
