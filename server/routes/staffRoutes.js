@@ -2,20 +2,22 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser')
 const cors = require('cors')
-// setup customer router
+// setup staff router
 const router = express.Router();
+
 router.use(morgan('dev'));
+const io = require('../config/server').io
 
 // test route
 router.get('/', (req, res) => {
-    res.send('this is from customer file!');
+    res.send('this is from server file!');
 });
 
-// getBillPayment route
-router.get('/getBillPayments', (req, res, next) => {
-    const customerId = req.query.customerId;
-    //query db
-    res.send('db query results');
+io.on('connection', function (socket) {
+    console.log('User has connected to staffRoutes');
+        //ON Events
+    
+        //End ON Events
 });
 
 module.exports = router;

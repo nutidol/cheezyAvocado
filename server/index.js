@@ -1,13 +1,24 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const { pool } = require('./config')
-const helmet = require('helmet')
-const compression = require('compression')
-const customerRoutes = require('./routes/customerRoutes');
-const morgan = require('morgan');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { pool } = require('./config/config');
+const helmet = require('helmet');
+const compression = require('compression');
+const app = require('./config/server').app;
+const mqtt = require('mqtt');
 
-const app = express()
+const guestRoutes = require('./routes/guestRoutes');
+const authentication = require('./routes/authentication');
+const menu = require('./routes/menu');
+const staffRoutes = require('./routes/staffRoutes');
+const morgan = require('morgan');
+const Avocabot = require('./classes/avocabot');
+const Order = require('./classes/order');
+const Queue = require('./classes/queue');
+const queryExample = require('./test/queryExample');
+const avocabotRoutes = require('./routes/avocabotRoutes');
+
+//const client = mqtt.connect('mqtt://broker.hivemq.com')
 
 app.use(morgan('dev'));
 app.use(bodyParser.json())
@@ -15,41 +26,47 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
-app.use('/customers', customerRoutes);
+app.use('/guests', guestRoutes);
+app.use('/authen', authentication.router)
+app.use('/menu', menu);
+app.use('/staffs', staffRoutes);
+app.use('/queryEx', queryExample);
+app.use('/avocabot', avocabotRoutes);
 
-const getCustomers = (request, response) => {
-  pool.query('SELECT * FROM Customer', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-const addCustomer = (request, response) => {
-  const { customerID, customerFirstName, customerLastName } = request.body
-
-  pool.query('INSERT INTO Customer (customerID, customerFirstName, customerLastName) VALUES ($1, $2, $3)', [customerID, customerFirstName, customerLastName], error => {
-    if (error) {
-      throw error
-    }
-    response.status(201).json({ status: 'success', message: 'Customer added.' })
-  })
-}
-// test api
-app.get('/' , (req, res, next) => {
-  res.send('hello');
+// USE FOR MOCK UP HTML FILE > page.html
+// Register the index route of your app that returns the HTML file
+app.get('/', function (req, res) {
+  console.log("Homepage");
+  res.sendFile(__dirname + '/page.html');
 });
 
+// USE FOR MOCK UP HTML FILE
+// Expose the node_modules folder as static resources (to access socket.io.js in the browser)
+app.use('/static', express.static('node_modules'));
 
-app
-  .route('/customerss')
-  // GET endpoint
-  .get(getCustomers)
-  // POST endpoint
-  .post(addCustomer)
+// PLS DONT DELETE!! how to pass parameter to guestRoutes.js 
+// app.use('/guests', function (req, res, next) {
+//   req.parameter = {
+//       param: server
+//   };
+//   next();
+// }, guestRoutes);
 
-// Start server
-app.listen(process.env.PORT || 3002, () => {
-  console.log(`Server listening`)
-})
+//Try mqtt
+// client.on('connect', () => {
+//   // Inform the avocabot that server is connected
+//   client.publish('server/connected', 'true')
+// })
+
+//Debug
+avocabot = new Avocabot('116');
+queue = new Queue(avocabot);
+avocabot.controller = queue;
+
+order = new Order('1111','Kitchen','101');
+queue.addToQueue(order);
+
+app.get('/execute', function (req, res) {
+  res.send('execute');
+  avocabot.execute();
+});
