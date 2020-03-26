@@ -15,6 +15,7 @@ const morgan = require('morgan');
 const Avocabot = require('./classes/avocabot');
 const Order = require('./classes/order');
 const Queue = require('./classes/queue');
+const HotelMap = require('./classes/hotelMap');
 const queryExample = require('./test/queryExample');
 const avocabotRoutes = require('./routes/avocabotRoutes');
 
@@ -59,7 +60,8 @@ app.use('/static', express.static('node_modules'));
 // })
 
 //Debug
-avocabot = new Avocabot('116');
+hotelMap = new HotelMap();
+avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 

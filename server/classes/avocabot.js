@@ -10,13 +10,15 @@ class Avocabot {
     instructionPointer
     currentTimeout;
     controller;
+    hotelMap;
 
-    constructor(currentPosition) {
+    constructor(currentPosition, hotelMap) { //currentPosition as a character notation.
       this.currentPosition = currentPosition;
+      this.hotelMap = hotelMap;
     }
 
     goTo(destination) {
-      //console.log('Going to ' + destination.destination);
+      console.log(' --- Going to ' + destination.destination + ' ---');
       this.currentDestination = destination;
       this.instructions = this.calculateRoute(destination.destination);
       this.instructionPointer = -1;
@@ -55,15 +57,19 @@ class Avocabot {
           'L' : this.turnLeft,
           'R' : this.turnRight,
           'F' : this.forward,
-          'B' : this.backward
+          'B' : this.backward,
+          'I' : this.enterHome,
+          'O' : this.exitHome
         }
-        let currentInstruction = this.instructions[this.instructionPointer];
+        let currentInstruction = this.instructions[this.instructionPointer].instruction;
         mapping[currentInstruction[0]](currentInstruction.substring(1));
       }
     }
 
     calculateRoute(destination) {
-      return [];
+      let currentNode = this.currentPosition;
+      let destinationNode = node[destination];
+      return hotelMap.getInstructions(currentNode, destinationNode);
     }
 
     turnLeft() {
@@ -71,7 +77,7 @@ class Avocabot {
     }
 
     turnRight() {
-
+      console.log('turn right');
     }
 
     forward(distance) {
@@ -79,7 +85,15 @@ class Avocabot {
     }
 
     backward(distance) {
+      console.log('backward' + distance);
+    }
 
+    enterHome() {
+      console.log('Enter home');
+    }
+
+    exitHome() {
+      console.log('Exit home');
     }
 
     openLocker() {
@@ -92,9 +106,6 @@ class Avocabot {
     closeLocker() {
       retrieveFromQueue();
     }
-    
-    
-  
     
 }
 
