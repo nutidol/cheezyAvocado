@@ -27,28 +27,15 @@ io.on('connection', function (socket) {
     //parameter = String department
     //database querying
     //return orders for that department
-//io.on('connection', function (socket) {
-    // console.log("Connected succesfully to the socket ...");
 
-//    var order = req.query.order;
-    // [
-    //     { guestName : 'guestName',order:'order'},
-    // ];
 
-    // Send news on the socket
-//    socket.emit('order', order);
-
-//     socket.on('order', function (data) {
-//         console.log(data);
-//     });
-// });
 
 // approveOrder route
 router.get('/approveOrder', (req, res, next) => {
     //receive orderid
     //set the order’s status to “approved”
     const orderNumber = req.body;
-    const query = 'UPDATE "order" SET "status" = \'Pending\' WHERE "orderID" = \'2\'';
+    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
