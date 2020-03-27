@@ -73,6 +73,6 @@ app.get('/execute', function (req, res) {
   avocabot.execute();
 });
 
-app.get('/test',(req,res)=>{
-  res.send('test');
+app.get('/finish',(req,res)=>{
+  res.send('OK');
 });

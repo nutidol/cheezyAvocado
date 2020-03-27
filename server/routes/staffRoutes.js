@@ -1,8 +1,8 @@
 const express = require('express');
-const { pool } = require('../config')
+const { pool } = require('../config/config');
 const morgan = require('morgan');
-const bodyParser = require('body-parser')
-const cors = require('cors')
+const bodyParser = require('body-parser');
+const cors = require('cors');
 // setup staff router
 const router = express.Router();
 
