@@ -7,7 +7,7 @@ class Avocabot {
     currentPosition;
     currentDestination;
     instructions;
-    instructionPointer
+    instructionPointer;
     currentTimeout;
     controller;
     hotelMap;
@@ -27,8 +27,12 @@ class Avocabot {
 
     execute() {
       this.instructionPointer++;
-      //TODO: Update currentPosition
       if(this.instructionPointer >= this.instructions.length) { //Avocabot has arrived.
+        //Update current position
+        if(this.instructionPointer != 0) {
+          let previousInstruction = this.instructions[this.instructionPointer-1];
+          this.currentPosition = previousInstruction.newPosition;
+        }
         //Set order status
         let status;
         let purpose = this.currentDestination.purpose;
@@ -61,6 +65,12 @@ class Avocabot {
           'I' : this.enterHome,
           'O' : this.exitHome
         }
+        //Update current position
+        if(this.instructionPointer != 0) {
+          let previousInstruction = this.instructions[this.instructionPointer-1];
+          this.currentPosition = previousInstruction.newPosition;
+        }
+        //Execute current instruction
         let currentInstruction = this.instructions[this.instructionPointer].instruction;
         mapping[currentInstruction[0]](currentInstruction.substring(1));
       }
@@ -69,6 +79,7 @@ class Avocabot {
     calculateRoute(destination) {
       let currentNode = this.currentPosition;
       let destinationNode = node[destination];
+      console.log('currentNode : ' + currentNode + ', destinationNode : ' + destinationNode);
       return hotelMap.getInstructions(currentNode, destinationNode);
     }
 
