@@ -60,13 +60,13 @@ app.use('/static', express.static('node_modules'));
 // })
 
 //Debug
-hotelMap = new HotelMap();
-avocabot = new Avocabot('K',hotelMap);
-queue = new Queue(avocabot);
-avocabot.controller = queue;
+// hotelMap = new HotelMap();
+// avocabot = new Avocabot('K',hotelMap);
+// queue = new Queue(avocabot);
+// avocabot.controller = queue;
 
-order = new Order('1111','Kitchen','101');
-queue.addToQueue(order);
+// order = new Order('1111','Kitchen','101');
+// queue.addToQueue(order);
 
 app.get('/execute', function (req, res) {
   res.send('execute');
@@ -142,4 +142,5 @@ app.get('/finish',(req,res)=>{
   queue.retrieveFromQueue();
 });
 
-hotelMap.getInstructions('A','I');
+//hotelMap.getInstructions('A','I');
+

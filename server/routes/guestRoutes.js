@@ -35,7 +35,7 @@ router.get('/getBillPayments', (req, res, next) => {
 
 //openRobotLocker
 //version 1,, use HTTP
-router.post('/openRobotLocker', (req, res, next) => {
+router.post('/openLocker', (req, res, next) => { 
     const openLockerStatus = req.query.openLockerStatus;
     console.log(openLockerStatus);
     if(openLockerStatus=1) { //receive from frontend

@@ -1,6 +1,6 @@
 const Destination = require('./destination');
 const Graph = require('./graph/graph');
-require('./../global');
+
 
 class Avocabot {
 
@@ -115,7 +115,7 @@ class Avocabot {
       },10000);
     }
 
-    closeLocker() {
+    closeLocker() { //Synonym: send avocabot
       //MQTT: turn light off and go home
       retrieveFromQueue();
     }

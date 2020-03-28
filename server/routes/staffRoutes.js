@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const router = express.Router();
+require('./../global');
 
 router.use(morgan('dev'));
 const io = require('../config/server').io
@@ -34,7 +35,7 @@ io.on('connection', function (socket) {
 
 
 // approveOrder route
-router.get('/approveOrder', (req, res, next) => {
+router.get('/acceptOrder', (req, res, next) => {
     //receive orderid as orderNumber -> frontend also need to send info about orderID!?
     const orderNumber = req.query.orderID;
     //set the order’s status to “approved”
@@ -54,43 +55,27 @@ router.get('/approveOrder', (req, res, next) => {
 
 
 // readyOrder route
-router.get('/readyOrder', (req, res, next) => {
+router.get('/foodFinished', (req, res, next) => {
 
-    //Get order id 
-    //query database -> orderID, departmentName, roomNumber
-    //
-
-// call avocabot to the station 
-    const orderID = req.body;
-    const query = 'SELECT * FROM "order"  "status" = \'Approved\' WHERE "orderID" = orderNumber';
-    
-// CALL QueryManager.addDeliveryOrder
-// put the order into the queue
-    let departmentName = 'Kitchen';
-    let roomNumber = '101';
+    //Call avocabot
+    let orderID = req.query.orderID;
+    //TODO: Query database for departmentName and roomNumber
+    let departmentName = req.query.departmentName;
+    let roomNumber = req.query.roomNumber;
     order = new Order(orderID,departmentName,roomNumber);
     queue.addToQueue(order);
-    pool.query(query, (error, results) => {
-        if (error) {
-            throw error
-        }
-        // res.status(200).json(results)
-        res.status(200).json({ status: 'success', message: 'Order Readied' })
-      })
+    
+    res.send('OK');
 });
 
 
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
-    const orderNumber = req.body;
-    const query = 'UPDATE "order" SET "status" = \'On the way\' WHERE "orderID" = orderNumber';
-    // const query = 'UPDATE "order" SET "status" = \'On the way\' WHERE "orderID" = \'2\'';
-    pool.query(query, (error, results) => {
-        if (error) {
-            throw error
-        }
-    res.status(200).json({ status: 'success', message: 'Order Sent' })
-    })
+    //1. Close locker
+    avocabot.closeLocker();
+    //2. Socket emit to Guest
+    //3. Database : Update status to 'on the way'
+    res.send('OK');
 });
 
 module.exports = router;

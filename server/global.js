@@ -1,11 +1,12 @@
-const GraphNode = require('./classes/graph/graphNode');
-const Graph = require('./classes/graph/graph');
+// const GraphNode = require('./classes/graph/graphNode');
+// const Graph = require('./classes/graph/graph');
 
-let A = new GraphNode('A',[{'B':'S30'}]);
-let B = new GraphNode('B',[{'A':'N30'},{'C':'S35'}]);
-let C = new GraphNode('C',[{'B':'N35'},{'D':'S35'},{'H':'E75'}]);
-
-//hotelMap = new Graph([A,B,C]);
+// let A = new GraphNode('A',[{'B':'S30'}]);
+// let B = new GraphNode('B',[{'A':'N30'},{'C':'S35'}]);
+// let C = new GraphNode('C',[{'B':'N35'},{'D':'S35'},{'H':'E75'}]);
+const Avocabot = require('./classes/avocabot');
+const Queue = require('./classes/queue');
+const HotelMap = require('./classes/hotelMap');
 
 node = {
     '101' : 'A',
@@ -30,15 +31,11 @@ node = {
     'Housekeeping' : 'J'
 }
 
-// instructionsFromI = {
-//     'A' : [{instruction: 'F35', newPosition: 'H'},'L',{instruction: 'F75', newPosition: 'C'},'R',{instruction: 'F65', newPosition: 'A'}],
-//     'B' : [{instruction: 'F35', newPosition: 'H'},'L',{instruction: 'F75', newPosition: 'C'},'R',{instruction: 'F35', newPosition: 'B'}],
-//     'C' : [{instruction: 'F35', newPosition: 'H'},'L',{instruction: 'F75', newPosition: 'C'}],
-//     'D' : [{instruction: 'F35', newPosition: 'H'},'L',{instruction: 'F75', newPosition: 'C'},'L',{instruction: 'F35', newPosition: 'D'}],
-//     'E' : [{instruction: 'F35', newPosition: 'H'},'L',{instruction: 'F75', newPosition: 'C'},'R',{instruction: 'F65', newPosition: 'E'}],
-//     'F' : [{instruction: 'F100', newPosition: 'F'}],
-//     'G' : [{instruction: 'F70', newPosition: 'G'}],
-//     'H' : [{instruction: 'F35', newPosition: 'H'}],
-//     'J' : [{instruction: 'B30', newPosition: 'J'}],
-//     'K' : [{instruction: 'H', newPosition: 'K'}]
-// }
+hotelMap = new HotelMap();
+avocabot = new Avocabot('K',hotelMap);
+queue = new Queue(avocabot);
+avocabot.controller = queue;
+
+// order = new Order('1111','Kitchen','101');
+// queue.addToQueue(order);
+
