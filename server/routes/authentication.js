@@ -85,14 +85,14 @@ router.post('/guest', (req,res) =>{ //return customerID
         }
         console.log(results.rows[0]);
         if(results.rows[0]){
-            const {guestLastName, checkInDate, checkOutDate} = results.rows[0];
+            const {guestLastName, checkInDate, checkOutDate, guestFirstName} = results.rows[0];
             const guestPassword = results.rows[0].password;
             const guestroomNumber = results.rows[0].roomNumber;
             console.log(guestLastName,checkInDate);
             if(guestLastName == lastName && guestPassword== password){
                 console.log('you\'re in ');
                 const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName}, accessTokenSecret)
-                res.json({accessToken});
+                res.json({accessToken,roomNumber,guestFirstName,guestLastName});
             }else{
                 res.send('Incorrect data');
             }
