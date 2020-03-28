@@ -13,6 +13,11 @@
             const lockerStatus=1;
             const fromDepartment="food";
 
+
+            socket.on('kitchenOrder', (data)=>{
+                console.log('this is from socket' + data);
+            });
+
             // socket.on('news', function (data) {
             //     var div = document.getElementById("news-list");
             //     console.log("Rendering news : ",data);
@@ -21,6 +26,7 @@
             //         var newsItem = data[i];
             //         div.innerHTML += "<h3>" + newsItem.title + ' <small>'+ newsItem.date + "</small></h3><br>";
             //     }
+
 
                 socket.emit('openLockerStatus', lockerStatus);
                 socket.emit('getOrder', fromDepartment);
