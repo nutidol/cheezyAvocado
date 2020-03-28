@@ -20,7 +20,7 @@ io.on('connection', function (socket) {
         //ON Events
         socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
             //query order from that department 
-            console.log(department);s
+            console.log(department);
         });
     
         //End ON Events
@@ -35,22 +35,21 @@ io.on('connection', function (socket) {
 
 // approveOrder route
 router.get('/approveOrder', (req, res, next) => {
-    var id = req.query.id;
-    console.log(id);
-    // //receive orderid as orderNumber -> frontend also need to send info about orderID!?
-    // const orderNumber = req.body;
-    // //set the order’s status to “approved”
-    // const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
-    // // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
-    // pool.query(query, (error, results) => {
-    //     if (error) {
-    //         console.log(error);
-    //         throw error
-    //     }
-    //     // res.status(200).json(results.row)
-    //     console.log(results);
-    //     res.status(200).json({ status: 'success', message: 'Order Approved' })
-    //   })
+    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+    const orderNumber = req.query.orderID;
+    //set the order’s status to “approved”
+    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
+    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
+            throw error
+        }
+        // res.status(200).json(results.row)
+        console.log(results);
+    res.status(200).json('order approved');
+    })
+    //TODO: socket emit to frontend
 });
 
 
@@ -62,14 +61,19 @@ router.get('/readyOrder', (req, res, next) => {
     //
 
 // call avocabot to the station 
+<<<<<<< HEAD
     const {orderID, departmentName, roomNumber, currentPosition} = req.body; 
+=======
+    const orderID = req.body;
+    const query = 'SELECT * FROM "order"  "status" = \'Approved\' WHERE "orderID" = orderNumber';
+    
+>>>>>>> 911af3924c256f811ffba891e2a0a6285c005ffc
 // CALL QueryManager.addDeliveryOrder
 // put the order into the queue
+    let departmentName = 'Kitchen';
+    let roomNumber = '101';
     order = new Order(orderID,departmentName,roomNumber);
     queue.addToQueue(order);
-// set the order’s status to “ready”
-    const query = 'UPDATE "order" SET "status" = \'Order Readied\' WHERE "orderID" = orderID';
-    // const query = 'UPDATE "order" SET status = \'Order Readied\' WHERE "orderID" = \'2\''
     pool.query(query, (error, results) => {
         if (error) {
             throw error

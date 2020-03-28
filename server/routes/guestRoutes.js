@@ -54,6 +54,8 @@ io.on('connection', function (socket) {
         io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
         console.log(openLockerStatus);
     });
+
+
     //End ON Events
 });
 
@@ -93,11 +95,11 @@ router.post('/placeOrder', (req,res)=>{
             var seconds = ("0" + date_ob.getSeconds()).slice(-2);
             const dateTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
             console.log(dateTime);
-            if(department == 'Kitchen'){
+            if(department == 'food'){
 
                 io.emit('kitchenOrder', order)
                 
-            }else if (department == 'Housekeeping'){
+            }else if (department == 'amenity'){
 
                 io.emit('houseKeepingOrder', order)
 
@@ -112,7 +114,7 @@ router.post('/placeOrder', (req,res)=>{
                 }
                 if(results1){
                     console.log('inserted');
-                    if(department == 'Kitchen'){
+                    if(department == 'food'){
                         for (i = 0; i < order.length; i++) {
                             const thisOrder = order[i]
                             const foodQuery = 'INSERT into "orderFood"("orderID","foodID",amount) VALUES (\''+ orderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
@@ -126,7 +128,7 @@ router.post('/placeOrder', (req,res)=>{
                             });
                         }  
                         res.status(200).json({orderID: orderID.toString()})
-                    }else if (department == 'Housekeeping'){
+                    }else if (department == 'amenity'){
                         for (i = 0; i < order.length; i++) {
                             const thisOrder = order[i]
                             const housekeepingQuery = 'INSERT into "orderAmenity"("orderID","amenityID",amount) VALUES (\''+ orderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
