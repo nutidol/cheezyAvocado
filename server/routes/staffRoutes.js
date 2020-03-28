@@ -1,9 +1,8 @@
 const express = require('express');
-const { pool } = require('../config')
+const { pool } = require('../config/config')
 const morgan = require('morgan');
 const bodyParser = require('body-parser')
 const cors = require('cors')
-// setup staff router
 const router = express.Router();
 
 router.use(morgan('dev'));
@@ -19,6 +18,10 @@ router.get('/', (req, res) => {
 io.on('connection', function (socket) {
     console.log('User has connected to staffRoutes');
         //ON Events
+        socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
+            //query order from that department 
+            console.log(department);
+        });
     
         //End ON Events
 });
@@ -32,10 +35,11 @@ io.on('connection', function (socket) {
 
 // approveOrder route
 router.get('/approveOrder', (req, res, next) => {
-    //receive orderid
-    //set the order’s status to “approved”
+    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
     const orderNumber = req.body;
+    //set the order’s status to “approved”
     const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
+    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
@@ -47,46 +51,43 @@ router.get('/approveOrder', (req, res, next) => {
       })
 });
 
-//"0000000001"
-
 
 // readyOrder route
 router.get('/readyOrder', (req, res, next) => {
-
-    const destination = req.body;
-    // put the order into the queue
-
-    // set the order’s status to “otw”
-    // call the robot to the station 
-    // call robot to this department
-    // avocabot.js??
-    const orderNumber = req.body;
-    const query = 'UPDATE "order" SET status = "OnTheWay" WHERE orderID = orderNumber'
+// call avocabot to the station 
+    const {orderID, departmentName, roomNumber, currentPosition} = req.body;
+    hotelMap = new HotelMap();
+    avocabot = new Avocabot(currentPosition,hotelMap);
+    queue = new Queue(avocabot);    
+    avocabot.controller = queue;
+// CALL QueryManager.addDeliveryOrder
+// put the order into the queue
+    order = new Order(orderID,departmentName,roomNumber);
+    queue.addToQueue(order);
+// set the order’s status to “ready”
+    const query = 'UPDATE "order" SET "status" = \'Order Readied\' WHERE "orderID" = orderID';
+    // const query = 'UPDATE "order" SET status = \'Order Readied\' WHERE "orderID" = \'2\''
     pool.query(query, (error, results) => {
         if (error) {
-          throw error
+            throw error
         }
         // res.status(200).json(results)
         res.status(200).json({ status: 'success', message: 'Order Readied' })
       })
 });
 
+
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
-    // console.log("Req" = req.body)
     const orderNumber = req.body;
-    const query = 'DELETE FROM "order" WHERE orderID = orderNumber'
-    // const query = 'DELETE FROM "order" WHERE orderID = "0000000001"'
+    const query = 'UPDATE "order" SET "status" = \'On the way\' WHERE "orderID" = orderNumber';
+    // const query = 'UPDATE "order" SET "status" = \'On the way\' WHERE "orderID" = \'2\'';
     pool.query(query, (error, results) => {
         if (error) {
-          throw error
+            throw error
         }
-    //delete that row of orderID from database?
-    // res.status(200).json(results.row)
     res.status(200).json({ status: 'success', message: 'Order Sent' })
     })
 });
-
-
 
 module.exports = router;

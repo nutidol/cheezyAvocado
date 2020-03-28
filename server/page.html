@@ -11,6 +11,7 @@
         <script>
             var socket = io('http://localhost:3000/');
             const lockerStatus=1;
+            const fromDepartment="food";
 
             // socket.on('news', function (data) {
             //     var div = document.getElementById("news-list");
@@ -22,6 +23,7 @@
             //     }
 
                 socket.emit('openLockerStatus', lockerStatus);
+                socket.emit('getOrder', fromDepartment);
             // });
         </script>
     </body>
