@@ -21,9 +21,16 @@ router.get('/', (req, res) => {
 
 // getBillPayment route
 router.get('/getBillPayments', (req, res, next) => {
-    const customerId = req.query.customerId;
-    //query db
-    res.send('db query results');
+    const guestId = req.query.guestID;
+    const query = 'SELECT * FROM "serviceBill" WHERE \"guestID\"=\''+guestId+'\'';
+   
+    pool.query(query, (error, results) => {
+        if (error) {
+            throw error
+          }
+        console.log(results)
+        res.status(200).json(results.rows[0].totalAmount)
+    })
 });
 
 //openRobotLocker
