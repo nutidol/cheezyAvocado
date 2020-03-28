@@ -30,10 +30,9 @@ class HotelMap {
         if(currentNode == 'J') return this.getInstructionsToNodeI('J').concat([...base]); //Beware of recursion
         if(currentNode == 'K') {
             let x = [...base];
-            x.unshift({instruction: 'O', newPosition: 'K'});
+            x.unshift({instruction: 'O', newPosition: 'I'});
             return x;
         }
-        
         let reversedBase = this.getInstructionsToNodeI(currentNode);
         if(destinationNode == 'I') return reversedBase;
         if(destinationNode == 'J') return [...reversedBase].concat(instructionFromNodeI['J']);
@@ -47,24 +46,25 @@ class HotelMap {
     getInstructionsToNodeI(currentNode) {
         let reversedInstructions = [];
         let base = this.instructionsFromNodeI[currentNode];
-        for(let i=base.length; i>0; i--) {
+        for(let i=base.length-1; i>0; i--) {
             let currentInstruction = base[i];
             reversedInstructions.push({
-                instruction: this.reverse(currentInstruction),
+                instruction: this.reverseInstruction(currentInstruction),
                 newPosition: base[i-1].newPosition
             });
         }
         reversedInstructions.push({
-            instruction: this.reverse(base[0]),
+            instruction: this.reverseInstruction(base[0]),
             newPosition: 'I'
         });
         return reversedInstructions;
     }
 
-    reverse(instruction) {
-        let type = instruction.instruction[0];
-        let distance = instruction.substring(1);
-        return mapping[type] + distance;
+    reverseInstruction(instruction) {
+        let instuctionString = instruction.instruction;
+        let type = instuctionString[0];
+        let distance = instuctionString.substring(1);
+        return this.reverse[type] + distance;
     }
 }
 

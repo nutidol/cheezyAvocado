@@ -75,4 +75,7 @@ app.get('/execute', function (req, res) {
 
 app.get('/finish',(req,res)=>{
   res.send('OK');
+  queue.retrieveFromQueue();
 });
+
+hotelMap.getInstructions('A','I');
