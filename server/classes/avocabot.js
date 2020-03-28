@@ -37,7 +37,7 @@ class Avocabot {
         let status;
         let purpose = this.currentDestination.purpose;
         switch(purpose) {
-          case this.controller.purpose.PICKUP : status = 'on the way'
+          //case this.controller.purpose.PICKUP : status = 'on the way'
           case this.controller.purpose.DELIVER : status = 'arrived'
           case this.controller.purpose.RETURN : status = 'missed'
         }
@@ -108,6 +108,7 @@ class Avocabot {
     }
 
     openLocker() {
+      //MQTT: turn on light
       clearInterval(this.currentTimeout);
       this.currentTimeout = setTimeout(()=>{
         this.controller.retrieveFromQueue();
@@ -115,6 +116,7 @@ class Avocabot {
     }
 
     closeLocker() {
+      //MQTT: turn light off and go home
       retrieveFromQueue();
     }
     

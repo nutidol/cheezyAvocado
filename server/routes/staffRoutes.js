@@ -35,31 +35,34 @@ io.on('connection', function (socket) {
 
 // approveOrder route
 router.get('/approveOrder', (req, res, next) => {
-    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
-    const orderNumber = req.body;
-    //set the order’s status to “approved”
-    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
-    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
-    pool.query(query, (error, results) => {
-        if (error) {
-            console.log(error);
-            throw error
-        }
-        // res.status(200).json(results.row)
-        console.log(results);
-        res.status(200).json({ status: 'success', message: 'Order Approved' })
-      })
+    var id = req.query.id;
+    console.log(id);
+    // //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+    // const orderNumber = req.body;
+    // //set the order’s status to “approved”
+    // const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE "orderID" = orderNumber';
+    // // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
+    // pool.query(query, (error, results) => {
+    //     if (error) {
+    //         console.log(error);
+    //         throw error
+    //     }
+    //     // res.status(200).json(results.row)
+    //     console.log(results);
+    //     res.status(200).json({ status: 'success', message: 'Order Approved' })
+    //   })
 });
 
 
 // readyOrder route
 router.get('/readyOrder', (req, res, next) => {
+
+    //Get order id 
+    //query database -> orderID, departmentName, roomNumber
+    //
+
 // call avocabot to the station 
-    const {orderID, departmentName, roomNumber, currentPosition} = req.body;
-    hotelMap = new HotelMap();
-    avocabot = new Avocabot(currentPosition,hotelMap);
-    queue = new Queue(avocabot);    
-    avocabot.controller = queue;
+    const {orderID, departmentName, roomNumber, currentPosition} = req.body; 
 // CALL QueryManager.addDeliveryOrder
 // put the order into the queue
     order = new Order(orderID,departmentName,roomNumber);
