@@ -61,13 +61,9 @@ router.get('/readyOrder', (req, res, next) => {
     //
 
 // call avocabot to the station 
-<<<<<<< HEAD
-    const {orderID, departmentName, roomNumber, currentPosition} = req.body; 
-=======
     const orderID = req.body;
     const query = 'SELECT * FROM "order"  "status" = \'Approved\' WHERE "orderID" = orderNumber';
     
->>>>>>> 911af3924c256f811ffba891e2a0a6285c005ffc
 // CALL QueryManager.addDeliveryOrder
 // put the order into the queue
     let departmentName = 'Kitchen';
