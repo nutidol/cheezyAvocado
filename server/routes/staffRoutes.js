@@ -20,7 +20,7 @@ io.on('connection', function (socket) {
         //ON Events
         socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
             //query order from that department 
-            console.log(department);
+            console.log(department);s
         });
     
         //End ON Events
