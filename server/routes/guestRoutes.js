@@ -75,18 +75,30 @@ router.post('/placeOrder', (req,res)=>{
             console.log("orderID is " + orderID);
             const {department, order} = req.body;
             console.log(order)
-            const timestamp = '00:00:00'  
+            const timestamp = '00:00:00'
+            const ts = Date.now();
+            var date_ob = new Date(ts);
+            var year = date_ob.getFullYear();
+            var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            var date = ("0" + date_ob.getDate()).slice(-2);
+            var hours = ("0" + date_ob.getHours()).slice(-2);
+            var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+            var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+            const dateTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+            console.log(dateTime);
             if(department == 'Kitchen'){
 
                 io.emit('kitchenOrder', order)
                 
             }else if (department == 'Housekeeping'){
+
                 io.emit('houseKeepingOrder', order)
+
             }else{
                 res.send('Incorrect department');
             }     
 
-            const query = 'INSERT into "order"("orderID", duration, status, timestamp, "departmentID", "guestID", "invoiceNumber") VALUES (\''+orderID+'\',\'1\',\'pending\',\''+timestamp+'\',\'1\',\'001\',\'12345678\')'
+            const query = 'INSERT into "order"("orderID", duration, status, timestamp, "departmentID", "guestID", "invoiceNumber","datetime") VALUES (\''+orderID+'\',\'1\',\'pending\',\''+timestamp+'\',\'1\',\'001\',\'12345678\',\''+dateTime+ '\')';
             pool.query(query, (error, results1) =>{
                 if(error){
                     throw error
@@ -105,7 +117,8 @@ router.post('/placeOrder', (req,res)=>{
                                     console.log('inserted food order '+ i );
                                 }
                             });
-                        }    
+                        }  
+                        res.status(200).json({orderID: orderID.toString()})
                     }else if (department == 'Housekeeping'){
                         for (i = 0; i < order.length; i++) {
                             const thisOrder = order[i]
@@ -119,6 +132,7 @@ router.post('/placeOrder', (req,res)=>{
                                 }
                             });
                         } 
+                        res.status(200).json({orderID: orderID.toString()})
                     }else{
                         res.send('Incorrect department');
                     }
@@ -128,9 +142,21 @@ router.post('/placeOrder', (req,res)=>{
     });
 });
 
-// router.get('/test', getCurrentID, (req,res, ) =>{
-//     const currentOrderID = getCurrentID();
-//     console.log('current order ID ' + currentOrderID);
+// router.get('/test', (req,res,) =>{
+//     var ts = Date.now();
+//     // convert unix timestamp to milliseconds
+//     var ts_ms = ts * 1000;
+//     var date_ob = new Date(ts);
+//     console.log(date_ob);
+//     var year = date_ob.getFullYear();
+//     var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+//     var date = ("0" + date_ob.getDate()).slice(-2);
+//     var hours = ("0" + date_ob.getHours()).slice(-2);
+//     var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+//     var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+//     console.log("Date as YYYY-MM-DD Format: " + year + "-" + month + "-" + date);
+//     console.log("Date as YYYY-MM-DD hh:mm:ss Format: " + year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
+//     res.send('okieee')
 // });
 
 // function getCurrentID(){ 
