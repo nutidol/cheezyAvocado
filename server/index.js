@@ -137,3 +137,9 @@ app.post('/addGuest',(req,res)=>{
         console.log('add to room')
     })
   });
+app.get('/finish',(req,res)=>{
+  res.send('OK');
+  queue.retrieveFromQueue();
+});
+
+hotelMap.getInstructions('A','I');
