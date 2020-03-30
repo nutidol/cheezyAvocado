@@ -72,7 +72,7 @@ router.get('/foodFinished', (req, res, next) => {
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
     //1. Close locker
-    avocabot.closeLocker();
+    avocabot.closeLocker(); //Warning: Improper called can cause bug in the navigation system
     //2. Socket emit to Guest
     //3. Database : Update status to 'on the way'
     res.send('OK');

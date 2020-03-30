@@ -36,6 +36,5 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
-// order = new Order('1111','Kitchen','101');
-// queue.addToQueue(order);
+
 

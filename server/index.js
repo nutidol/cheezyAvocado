@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const app = require('./config/server').app;
 const mqtt = require('mqtt');
+require('./global');
 
 const guestRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
@@ -52,30 +53,6 @@ app.use('/static', express.static('node_modules'));
 //   };
 //   next();
 // }, guestRoutes);
-
-//Try mqtt
-// client.on('connect', () => {
-//   // Inform the avocabot that server is connected
-//   client.publish('server/connected', 'true')
-// })
-
-//Debug
-// hotelMap = new HotelMap();
-// avocabot = new Avocabot('K',hotelMap);
-// queue = new Queue(avocabot);
-// avocabot.controller = queue;
-
-// order = new Order('1111','Kitchen','101');
-// queue.addToQueue(order);
-
-app.get('/execute', function (req, res) {
-  res.send('execute');
-  avocabot.execute();
-});
-
-app.get('/test',(req,res)=>{
-  res.send('test');
-});
 
 app.post('/addGuest',(req,res)=>{
   const guestID= req.query.guestID
@@ -137,10 +114,161 @@ app.post('/addGuest',(req,res)=>{
         console.log('add to room')
     })
   });
-app.get('/finish',(req,res)=>{
+
+
+//------------------------------------------------Test Public MQTT------------------------------------------------
+
+//Worked! But not work with our avocabot.
+
+// var client  = mqtt.connect('mqtt://broker.mqttdashboard.com')
+
+// client.on('connect', function () {
+//   client.subscribe('presence', function (err) {
+//     if (!err) {
+//       client.publish('presence', 'Hello mqtt')
+//       console.log('connected!');
+//     }
+//   })
+//   client.subscribe('cheezy',(err)=>{
+//     if(!err) {
+//       //client.publish('avocado!')
+//       console.log('subscribed to cheezy!');
+//     }
+//   })
+// })
+
+// client.on('message', (topic, message) => {
+//   if(topic == 'cheezy') {
+//     console.log(topic);
+//     console.log(message.toString());
+//   }
+// })
+
+// client.publish('cheezyavocado','Test');
+
+//------------------------------------------------Test cayenne mqtt ------------------------------------------------
+
+//Not working
+
+// var Cayenne = require('cayenne-mqtt');
+// var options = {
+//   'clientId' : '3185d220-6dc5-11ea-b301-fd142d6c1e6c',
+//   'username' : '97bc8410-6ceb-11ea-b301-fd142d6c1e6c',
+//   'password' : '1fdc8ecb6167cf2eee213597b72a2af0d0ac3c5c'
+// }
+// var Client = new Cayenne.Client(options);
+// Client.connect();
+ 
+// var Ch0 = Client.Channel('0');
+// var Ch1 = Client.Channel('1');
+ 
+// Ch1.on('message',function(msg){   
+//   if(msg == '1') Ch2.publish('0');
+//   if(msg == '0') Ch2.publish('1');
+// });
+
+// Ch0.publish('0');
+
+//------------------------------------------------Test cayenne mqtt 2------------------------------------------------
+
+// var client = mqtt.connect('mqtt://mqtt.mydevices.com',{
+//     port: 1883,  
+//     clientId: '3185d220-6dc5-11ea-b301-fd142d6c1e6c',  
+//     username: '97bc8410-6ceb-11ea-b301-fd142d6c1e6c',  
+//     password: '1fdc8ecb6167cf2eee213597b72a2af0d0ac3c5c'
+//     //connectTimeout: 5000  
+// });
+
+// client.on('connect', function () {
+//   client.subscribe('presence', function (err) {
+//     if (!err) {
+//       client.publish('presence', 'Hello mqtt')
+//       console.log('connected!');
+//     }
+//   })
+//   client.subscribe('cheezy',(err)=>{
+//     if(!err) {
+//       //client.publish('avocado!')
+//       console.log('subscribed to cheezy!');
+//     }
+//   })
+// })
+
+// client.publish('cheezyavocado','Test');
+
+//------------------------------------------------Test delivery system------------------------------------------------
+order = new Order('1111','Kitchen','101');
+queue.addToQueue(order);
+
+app.get('/finish', function (req, res) {
   res.send('OK');
-  queue.retrieveFromQueue();
+  avocabot.execute();
 });
 
-//hotelMap.getInstructions('A','I');
+app.get('/sendOrder',(req,res)=>{
+  res.send('OK');
+  avocabot.closeLocker();
+});
 
+//------------------------------------------------Test mqtt async------------------------------------------------
+
+// let client = mqtt.connect('mqtt://broker.mqttdashboard.com');
+
+// client.on('connect', function () {
+//   client.subscribe('presence', function (err) {
+//     if (!err) {
+//       client.publish('presence', 'Hello mqtt')
+//       console.log('connected!');
+//     }
+//   })
+//   client.subscribe('cheezy',(err)=>{
+//     if(!err) {
+//       console.log('subscribed to cheezy!');
+//     }
+//   })
+// });
+
+// let promise = new Promise((resolve, reject) => {
+//   client.on('message', (topic, message) => {
+//     if(topic == 'cheezy') {
+//       console.log(topic);
+//       console.log(message.toString());
+//     }
+//   })
+// });
+
+// promise.then(()=>{
+//   console.log('fulfull');
+// }).catch((err)=>{
+//   console.log(err);
+// })
+
+//------------------------------------------------Test http async------------------------------------------------
+
+
+// let promise2 = new Promise((resolve, reject) => {
+//   app.get('/testAsync',(req,res)=>{
+//     resolve();
+//     res.send('OK');
+//   });
+// });
+
+// promise2.then(()=>{
+//   console.log('fulfill');
+// }).catch((err)=>{
+//   console.log(err);
+// })
+
+// async function goTo() {
+//   for(let i=0;i<5;i++) {
+//     console.log(i);
+//     await new Promise((resolve,reject)=>{
+//       app.get('/testAsync',(req,res)=>{
+//         resolve();
+//         res.send('OK');
+//       });
+//     })
+//   }
+// }
+
+// goTo();
