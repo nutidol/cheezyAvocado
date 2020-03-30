@@ -108,7 +108,9 @@ class Avocabot {
     }
 
     openLocker() {
-      if(this.currentDestination.destination != this.currentPosition) {
+      let currentNode = node[this.currentDestination.destination];
+      let destinationNode = this.currentPosition;
+      if(currentNode != destinationNode) {
         console.log('The locker is trying to open while the avocabot is not at the destination');
         return;
       }
