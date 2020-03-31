@@ -20,7 +20,7 @@ io.on('connection', function (socket) {
         //ON Events
         socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
             //query order from that department 
-            console.log(department);s
+            console.log(department);
         });
     
         //End ON Events
@@ -89,5 +89,22 @@ router.get('/sendOrder', (req, res) => {
     res.status(200).json({ status: 'success', message: 'Order Sent' })
     })
 });
+
+
+router.get('/openRobotLocker', (req, res, next) => {
+    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+    console.log(openLockerStatus);
+    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+        avocabot.openLockerStaff() 
+        if(avocabot.openRobotSuccess==true) {
+        res.status(200).send('success');
+        } else {
+            res.status(200).send('not success')
+        }
+     } else {
+        res.status(200).send('not success')
+    }
+    avocabot.openRobotSuccess=false;
+})
 
 module.exports = router;

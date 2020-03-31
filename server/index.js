@@ -5,7 +5,7 @@ const { pool } = require('./config/config');
 const helmet = require('helmet');
 const compression = require('compression');
 const app = require('./config/server').app;
-const mqtt = require('mqtt');
+const client=require('./config/mqtt')
 
 const guestRoutes = require('./routes/guestRoutes');
 const authentication = require('./routes/authentication');
@@ -19,7 +19,7 @@ const HotelMap = require('./classes/hotelMap');
 const queryExample = require('./test/queryExample');
 const avocabotRoutes = require('./routes/avocabotRoutes');
 
-//const client = mqtt.connect('mqtt://broker.hivemq.com')
+
 
 app.use(morgan('dev'));
 app.use(bodyParser.json())
@@ -77,52 +77,30 @@ app.get('/test',(req,res)=>{
   res.send('test');
 });
 
-app.post('/addGuest',(req,res)=>{
+app.get('/addGuest',(req,res)=>{
   const guestID= req.query.guestID
   const guestFirstName =req.query.guestFirstName
   const guestLastName =req.query.guestLastName
   const guestNameTitle= req.query.guestNameTitle
-  const guestEmailAddress = req.query.guestEmailAddress
-  const password=req.query.password 
+  //const guestEmailAddress = req.query.guestEmailAddress
+  //const password=req.query.password 
   const roomNumber=req.query.roomNumber
   const roomTypeName=req.query.roomTypeName
   const checkInDate=req.query.checkInDate
   const checkOutDate=req.query.checkOutDate
+  console.log('receive parameter')
 
-  var sql1 = 'INSERT INTO guest ("guestID", "guestFirstName", "guestLastName", "guestNameTitle", "guestEmailAddress", "password") VALUES (\''+guestID+'\',\''+guestFirstName+'\',\''+guestLastName+'\',\''+guestNameTitle+'\',\''+guestEmailAddress+'\',\''+password+'\')' 
+  var sql1 = 'INSERT INTO guest ("guestID", "guestFirstName", "guestLastName", "guestNameTitle", "guestEmailAddress", "password") VALUES (\''+guestID+'\',\''+guestFirstName+'\',\''+guestLastName+'\',\''+guestNameTitle+'\',\''+null+'\',\''+null+'\')' 
   var sql2 = 'INSERT INTO room ("roomNumber", "roomTypeName", "guestID", "checkInDate", "checkOutDate") VALUES (\''+roomNumber+'\',\''+roomTypeName+'\',\''+guestID+'\',\''+checkInDate+'\',\''+checkOutDate+'\')'
-  // var sql1 = 'INSERT INTO guest (guestID, guestFirstName, guestLastName, guestNameTitle, guestEmailAddress, password) VALUES ?'
-  // var sql2 = 'INSERT INTO room (roomNumber, roomTypeName, guestID, checkInDate, checkOutDate) VALUES ?'
-  //var sql3 = 'INSERT INTO guest (guestID, guestFirstName, guestLastName, guestNameTitle, guestEmailAddress, password) VALUES ?'
-  //const guestInfo=req.query.guestInfo
-  //const guestInfo=req.query.guestInfo;
+
+  console.log('insert parameter')
   
-  //const {guestID, guestFirstName, guestLastName, guestNameTitle,roomNumber,  checkInDate, checkOutDate} = req.query.guestInfo;
-  // var value1=[
-  //   [guestID, guestFirstName, guestLastName, guestNameTitle, null , null ]
-  // ];
-  // var value2=[
-  //   [roomNumber, null , guestID, checkInDate, checkOutDate]
-  // ]
-  // var value1=[
-  //   [guestInfo.guestID, guestInfo.guestFirstName, guestInfo.guestLastName, guestInfo.guestNameTitle, guestInfo.guestEmailAddress , guestInfo.password ]
-  // ];
-  // var value2=[
-  //   [guestInfo.roomNumber, guestInfo.roomTypeName , guestInfo.guestID, guestInfo.checkInDate, guestInfo.checkOutDate]
-  // ];
-  // var value1=[
-  //   [req.query.guestID, req.query.guestFirstName, req.query.guestLastName, req.query.guestNameTitle, req.query.guestEmailAddress , req.query.password ]
-  // ];
-  // var value2=[
-  //   [req.query.roomNumber, req.query.roomTypeName , req.query.guestID, req.query.checkInDate, req.query.checkOutDate]
-  // ]
-  console.log('hi')
   pool.query(sql1,  (error, results1) => {
       if (error) {
         console.log('error')
         throw error;
       }
-      //res.status(200).json(results1.rows)
+        //res.status(200).json(results1)
         //res.status(200).send('added new guest');
         console.log('add to guest')
     })
@@ -130,16 +108,19 @@ app.post('/addGuest',(req,res)=>{
       if (error) {
         console.log('error')
         throw error;
-        
-      }
-      res.status(200).json(results2.rows)
-        //res.status(200).send('added new guest');
+        }
+      //res.status(200).json(results2.rows)
+        res.status(200).send('added new guest');
         console.log('add to room')
     })
   });
+
 app.get('/finish',(req,res)=>{
   res.send('OK');
   queue.retrieveFromQueue();
 });
 
 hotelMap.getInstructions('A','I');
+
+
+

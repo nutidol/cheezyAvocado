@@ -35,26 +35,39 @@ router.get('/getBillPayments', (req, res, next) => {
 
 //openRobotLocker
 //version 1,, use HTTP
-router.post('/openRobotLocker', (req, res, next) => {
-    const openLockerStatus = req.query.openLockerStatus;
+router.get('/openRobotLocker', (req, res, next) => {
+    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
     console.log(openLockerStatus);
-    if(openLockerStatus=1) { //receive from frontend
-    res.send(1); //send to arduino
-    //1=openlocker, or call arduino function directly but let robot do is better
-    //robot set 0 for locked locker and 1 for opened locker in arduino
+    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+        avocabot.openLockerGuest() 
+        if(avocabot.openRobotSuccess==true) {
+        res.status(200).send('success');
+        } else {
+            res.status(200).send('not success')
+        }
+     } else {
+        res.status(200).send('not success')
     }
 })
 
-//openRobotLocker
-//version2 use Socket
+router.get('/returnRobot', (req,res,next)=> {
+    avocabot.returnRobot()
+    if(avocabot.callReturnRobot==true) {
+        res.status(200).send('success');
+    } else {
+        res.status(200).send('not success');
+    }
+})
+
+
 io.on('connection', function (socket) {
     console.log('User has connected to guestRoutes');
     //ON Events
-    socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend(receive from page.html(mockup))
-        io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
-        console.log(openLockerStatus);
-    });
-    //End ON Events
+    // socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend(receive from page.html(mockup))
+    //     io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
+    //     console.log(openLockerStatus);
+    // });
+    // //End ON Events
 });
 
 

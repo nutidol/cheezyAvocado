@@ -32,6 +32,7 @@ class Queue {
         this.queue.shift();
         let destination = (this.queue.length == 0 ) ? new Destination('116',this.purpose.GOHOME,null) : this.queue[0];
         avocabot.goTo(destination);
+        avocabot.callReturnRobot=false;
     }
 
 }
