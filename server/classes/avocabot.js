@@ -45,6 +45,7 @@ class Avocabot {
           this.currentDestination.order.updateStatus(status);
         }
         //TODO: Ring bell
+        //TODO: Socket.emit to frontend to allow open avocabot
         //Set timeout for 30 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
