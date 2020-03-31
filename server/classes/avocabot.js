@@ -1,7 +1,8 @@
 const Destination = require('./destination');
 const Graph = require('./graph/graph');
 require('./../global');
-const client=require('../config/mqtt')
+const client=require('../config/mqtt');
+
 
 class Avocabot {
 
@@ -29,7 +30,7 @@ class Avocabot {
     }
 
     execute() {
-      this.instructionPointer++;
+      this.instructionPointer++; //TODO: Fix it!
       if(this.instructionPointer >= this.instructions.length) { //Avocabot has arrived.
         //Update current position
         if(this.instructionPointer != 0) {
@@ -40,7 +41,7 @@ class Avocabot {
         let status;
         let purpose = this.currentDestination.purpose;
         switch(purpose) {
-          case this.controller.purpose.PICKUP : status = 'on the way'
+          //case this.controller.purpose.PICKUP : status = 'on the way'
           case this.controller.purpose.DELIVER : status = 'arrived'
           case this.controller.purpose.RETURN : status = 'missed'
         }
@@ -110,6 +111,7 @@ class Avocabot {
       console.log('Exit home');
     }
 
+    // Tam's
     openLockerGuest() {
       //Connect MQTT
       client.on('connect', function () {
@@ -141,6 +143,36 @@ class Avocabot {
       this.openRobotSuccess=false;
       this.callReturnRobot=true;
       retrieveFromQueue(); //go home
+    }
+    
+    //Party's
+    openLocker() {
+      let currentNode = node[this.currentDestination.destination];
+      let destinationNode = this.currentPosition;
+      if(currentNode != destinationNode) {
+        console.log('The locker is trying to open while the avocabot is not at the destination');
+        return;
+      }
+      //MQTT: turn on light
+      if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
+        clearInterval(this.currentTimeout);
+        this.currentTimeout = setTimeout(()=>{
+          this.controller.retrieveFromQueue();
+        },10000);
+      }
+      
+    }
+
+    closeLocker() { //Synonym: send avocabot
+      let currentNode = node[this.currentDestination.destination];
+      let destinationNode = this.currentPosition;
+      if(currentNode != destinationNode) {
+        console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
+        return;
+      }
+      //MQTT: turn light off
+      clearInterval(this.currentTimeout);
+      this.controller.retrieveFromQueue();
     }
 
     
