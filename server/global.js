@@ -36,5 +36,7 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
+const mqtt = require('mqtt');
+client = mqtt.connect('mqtt://broker.hivemq.com');
 
 

@@ -1,7 +1,6 @@
 const Destination = require('./destination');
 const Graph = require('./graph/graph');
-require('./../global');
-const client=require('../config/mqtt');
+require('../global');
 
 
 class Avocabot {
@@ -13,7 +12,7 @@ class Avocabot {
     currentTimeout;
     controller;
     hotelMap;
-    openRobotSuccess;
+    lockerIsOpen;
     callReturnRobot;
 
     constructor(currentPosition, hotelMap) { //currentPosition as a character notation.
@@ -110,44 +109,10 @@ class Avocabot {
 
     exitHome() {
       console.log('Exit home');
-    }
-
-    // Tam's
-    openLockerGuest() {
-      //Connect MQTT
-      client.on('connect', function () {
-        console.log("MQTT Connect to Guest openlocker function");
-        client.publish("openLockerGuest", "1"); // send 1 means open LED
-    });
-      this.openRobotSuccess=true;
-      //set time out to go home after guest takes the order out 
-      clearInterval(this.currentTimeout);
-      this.currentTimeout = setTimeout(()=>{
-        if(this.callReturnRobot==true) {
-          return;
-        }
-        this.controller.retrieveFromQueue();
-      },20000);
-    }
-
-    openLockerStaff() {
-    //Connect MQTT
-      client.on('connect', function () {
-        console.log("MQTT Connect to Staff openlocker function");
-        client.publish("openLockerStaff", "1"); // send 1 means open LED
-    });
-      this.openRobotSuccess=true;
-      //no time out
-    }
-
-    returnRobot() {
-      this.openRobotSuccess=false;
-      this.callReturnRobot=true;
-      retrieveFromQueue(); //go home
-    }
+    }   
     
-    //Party's
     openLocker() {
+
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
       if(currentNode != destinationNode) {
@@ -155,27 +120,41 @@ class Avocabot {
         return;
       }
       //MQTT: turn on light
+      client.on('connect', function () {
+        console.log("MQTT Connect to Staff openlocker function");
+        client.publish("openLocker", "1"); // send 1 means open LED
+      });
+      //receive response from robot
+      this.lockerIsOpen = true;
+      //no time out
+
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
         clearInterval(this.currentTimeout);
         this.currentTimeout = setTimeout(()=>{
           this.controller.retrieveFromQueue();
         },10000);
       }
+
+      //return success status
       
     }
 
-    closeLocker() { //Synonym: send avocabot
+    returnAvocabot() { //Synonym: send avocabot
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
       if(currentNode != destinationNode) {
         console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
         return;
       }
+      this.callReturnRobot = false;
       //MQTT: turn light off
+      //receive response from robot when leave guest room
       clearInterval(this.currentTimeout);
+      this.lockerIsOpen = false;
+      //if send robot success
+      this.callReturnRobot = true;
       this.controller.retrieveFromQueue();
     }
-
     
 }
 
@@ -193,8 +172,12 @@ module.exports = Avocabot;
 //   });
 // });
 
+// client.on('connect', function () {
+//   console.log("MQTT Connect to Staff openlocker function");
+//   client.publish("test", "1"); // send 1 means open LED
+// });
 
-// // Receive Message and print on terminal
+// Receive Message and print on terminal
 // client.on('message', function (topic, message) {
 //   // message is Buffer
 //   console.log(message.toString());

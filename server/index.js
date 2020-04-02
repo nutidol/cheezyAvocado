@@ -96,7 +96,7 @@ app.get('/addGuest',(req,res)=>{
 //------------------------------------------------Test Public MQTT------------------------------------------------
 
 //Worked! But not work with our avocabot.
-
+// const mqtt = require('mqtt');
 // var client  = mqtt.connect('mqtt://broker.mqttdashboard.com')
 
 // client.on('connect', function () {
@@ -122,6 +122,39 @@ app.get('/addGuest',(req,res)=>{
 // })
 
 // client.publish('cheezyavocado','Test');
+
+//------------------------------------------------Test public mqtt with Tam--------------------------------------------
+// const client = require('./config/mqtt.js');
+// // // Connect MQTT
+// client.on('connect', function () {
+//   // Subscribe any topic
+//   console.log("MQTT Connect");
+//   client.subscribe('esifijighpwajo', function (err) {
+//       if (err) {
+//           console.log(err);
+//       }
+     
+//   });
+// });
+
+// client.on('connect', function () {
+//   console.log("MQTT Connect to Staff openlocker function");
+//   client.publish("test", "1"); // send 1 means open LED
+// });
+
+// Receive Message and print on terminal
+// client.on('message', function (topic, message) {
+//   // message is Buffer
+//   console.log(message.toString());
+// });
+
+
+
+// client.on('connect', function () {
+//   console.log("MQTT Connect publish");
+//   client.publish('esifijighpwajo', "hello from NodeJS");
+     
+// });
 
 //------------------------------------------------Test cayenne mqtt ------------------------------------------------
 

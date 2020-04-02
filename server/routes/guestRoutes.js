@@ -1,10 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
-const bodyParser = require('body-parser')
-const cors = require('cors')
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const io = require('../config/server').io
 const auth = require('./authentication');
-const { pool } = require('../config/config')
+const { pool } = require('../config/config');
+require('../global');
 
 // setup guest router
 const router = express.Router();
@@ -35,12 +36,12 @@ router.get('/getBillPayments', (req, res, next) => {
 
 //openRobotLocker
 //version 1,, use HTTP
-router.get('/openRobotLocker', (req, res, next) => {
+router.get('/openLocker', (req, res, next) => {
     const openLockerStatus = req.query.openLockerStatus; //receive from frontend
     console.log(openLockerStatus);
     if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-        avocabot.openLockerGuest() 
-        if(avocabot.openRobotSuccess==true) {
+        avocabot.openLocker() 
+        if(avocabot.lockerIsOpen==true) {
         res.status(200).send('success');
         } else {
             res.status(200).send('not success')
@@ -51,7 +52,7 @@ router.get('/openRobotLocker', (req, res, next) => {
 })
 
 router.get('/returnRobot', (req,res,next)=> {
-    avocabot.returnRobot()
+    avocabot.returnAvocabot()
     if(avocabot.callReturnRobot==true) {
         res.status(200).send('success');
     } else {

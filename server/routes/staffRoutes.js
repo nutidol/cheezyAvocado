@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const router = express.Router();
-require('./../global');
+require('../global');
 
 router.use(morgan('dev'));
 const io = require('../config/server').io
@@ -72,27 +72,26 @@ router.get('/foodFinished', (req, res, next) => {
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
     //1. Close locker
-    avocabot.closeLocker(); //Warning: Improper called can cause bug in the navigation system
+    avocabot.returnAvocabot(); //Warning: Improper called can cause bug in the navigation system
     //2. Socket emit to Guest
     //3. Database : Update status to 'on the way'
     res.send('OK');
 });
 
 
-router.get('/openRobotLocker', (req, res, next) => {
+router.get('/openLocker', (req, res, next) => {
     const openLockerStatus = req.query.openLockerStatus; //receive from frontend
     console.log(openLockerStatus);
     if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-        avocabot.openLockerStaff() 
-        if(avocabot.openRobotSuccess==true) {
-        res.status(200).send('success');
+        avocabot.openLocker();
+        if(avocabot.lockerIsOpen == true) {
+            res.status(200).send('success');
         } else {
             res.status(200).send('not success')
         }
      } else {
         res.status(200).send('not success')
     }
-    avocabot.openRobotSuccess=false;
 })
 
 module.exports = router;
