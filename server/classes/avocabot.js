@@ -1,5 +1,7 @@
 const Destination = require('./destination');
 const Graph = require('./graph/graph');
+require('./../global');
+const client=require('../config/mqtt');
 
 
 class Avocabot {
@@ -11,6 +13,8 @@ class Avocabot {
     currentTimeout;
     controller;
     hotelMap;
+    openRobotSuccess;
+    callReturnRobot;
 
     constructor(currentPosition, hotelMap) { //currentPosition as a character notation.
       this.currentPosition = currentPosition;
@@ -108,6 +112,41 @@ class Avocabot {
       console.log('Exit home');
     }
 
+    // Tam's
+    openLockerGuest() {
+      //Connect MQTT
+      client.on('connect', function () {
+        console.log("MQTT Connect to Guest openlocker function");
+        client.publish("openLockerGuest", "1"); // send 1 means open LED
+    });
+      this.openRobotSuccess=true;
+      //set time out to go home after guest takes the order out 
+      clearInterval(this.currentTimeout);
+      this.currentTimeout = setTimeout(()=>{
+        if(this.callReturnRobot==true) {
+          return;
+        }
+        this.controller.retrieveFromQueue();
+      },20000);
+    }
+
+    openLockerStaff() {
+    //Connect MQTT
+      client.on('connect', function () {
+        console.log("MQTT Connect to Staff openlocker function");
+        client.publish("openLockerStaff", "1"); // send 1 means open LED
+    });
+      this.openRobotSuccess=true;
+      //no time out
+    }
+
+    returnRobot() {
+      this.openRobotSuccess=false;
+      this.callReturnRobot=true;
+      retrieveFromQueue(); //go home
+    }
+    
+    //Party's
     openLocker() {
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
@@ -136,7 +175,43 @@ class Avocabot {
       clearInterval(this.currentTimeout);
       this.controller.retrieveFromQueue();
     }
+
     
 }
 
 module.exports = Avocabot;
+
+// // Connect MQTT
+// client.on('connect', function () {
+//   // Subscribe any topic
+//   console.log("MQTT Connect");
+//   client.subscribe('test', function (err) {
+//       if (err) {
+//           console.log(err);
+//       }
+     
+//   });
+// });
+
+
+// // Receive Message and print on terminal
+// client.on('message', function (topic, message) {
+//   // message is Buffer
+//   console.log(message.toString());
+// });
+
+
+
+// client.on('connect', function () {
+//   console.log("MQTT Connect publish");
+//   client.publish('test', "hello from NodeJS");
+     
+// });
+
+
+
+
+//NOT USE BUT KEEP IT
+// setInterval(() => {
+//   client.publish("test", "hello from NodeJS");
+// }, 5000);

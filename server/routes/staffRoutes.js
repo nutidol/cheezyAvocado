@@ -78,4 +78,21 @@ router.get('/sendOrder', (req, res) => {
     res.send('OK');
 });
 
+
+router.get('/openRobotLocker', (req, res, next) => {
+    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+    console.log(openLockerStatus);
+    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+        avocabot.openLockerStaff() 
+        if(avocabot.openRobotSuccess==true) {
+        res.status(200).send('success');
+        } else {
+            res.status(200).send('not success')
+        }
+     } else {
+        res.status(200).send('not success')
+    }
+    avocabot.openRobotSuccess=false;
+})
+
 module.exports = router;
