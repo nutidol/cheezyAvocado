@@ -29,8 +29,12 @@ class Avocabot {
     }
 
     execute() {
-      this.instructionPointer++; //TODO: Fix it!
-      if(this.instructionPointer >= this.instructions.length) { //Avocabot has arrived.
+      this.instructionPointer++;
+      if(this.instructionPointer > this.instructions.length) {
+        console.warn('Pointer is out of range');
+      }
+      if(this.instructionPointer == this.instructions.length) { //Avocabot has arrived.
+        console.log('The avocabot has arrived!');
         //Update current position
         if(this.instructionPointer != 0) {
           let previousInstruction = this.instructions[this.instructionPointer-1];
@@ -60,7 +64,7 @@ class Avocabot {
           },30000);
         }
 
-      }else{
+      }else if(this.instructionPointer < this.instructions.length){
         let mapping = {
           'L' : this.turnLeft,
           'R' : this.turnRight,
@@ -97,6 +101,7 @@ class Avocabot {
 
     forward(distance) {
       console.log('forward ' + distance);
+      client.publish('Cheezy','Forward');
     }
 
     backward(distance) {
@@ -109,37 +114,31 @@ class Avocabot {
 
     exitHome() {
       console.log('Exit home');
+      client.publish('Cheezy','exitHome');
     }   
     
     openLocker() {
-
+      //Check whether avocabot is at the destination
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
       if(currentNode != destinationNode) {
-        console.log('The locker is trying to open while the avocabot is not at the destination');
+        console.log('Someone is trying to open the locker while the avocabot is not at the destination!');
         return;
       }
-      //MQTT: turn on light
-      client.on('connect', function () {
-        console.log("MQTT Connect to Staff openlocker function");
-        client.publish("openLocker", "1"); // send 1 means open LED
-      });
-      //receive response from robot
+      //MQTT: Tell avocabot to open locker (turn on the light)
+      client.publish('Cheezy','openLocker');
+      //TODO: Receive response from robot
       this.lockerIsOpen = true;
-      //no time out
-
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
         clearInterval(this.currentTimeout);
         this.currentTimeout = setTimeout(()=>{
           this.controller.retrieveFromQueue();
         },10000);
       }
-
-      //return success status
-      
+      //TODO: return success status
     }
 
-    returnAvocabot() { //Synonym: send avocabot
+    sendAvocabot() {
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
       if(currentNode != destinationNode) {

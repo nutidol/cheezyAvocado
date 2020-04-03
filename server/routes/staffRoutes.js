@@ -71,8 +71,8 @@ router.get('/foodFinished', (req, res, next) => {
 
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
-    //1. Close locker
-    avocabot.returnAvocabot(); //Warning: Improper called can cause bug in the navigation system
+    //1. Send Avocabot
+    avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
     //2. Socket emit to Guest
     //3. Database : Update status to 'on the way'
     res.send('OK');
@@ -81,13 +81,12 @@ router.get('/sendOrder', (req, res) => {
 
 router.get('/openLocker', (req, res, next) => {
     const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    console.log(openLockerStatus);
-    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+    if(openLockerStatus == 1) { //robot set 0 for locked locker and 1 for opened locker in arduino
         avocabot.openLocker();
         if(avocabot.lockerIsOpen == true) {
             res.status(200).send('success');
         } else {
-            res.status(200).send('not success')
+            res.status(200).send('not success') //FIXME: Status 200 shouldn't be used for 'not success'
         }
      } else {
         res.status(200).send('not success')

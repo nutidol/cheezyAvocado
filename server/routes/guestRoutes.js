@@ -52,8 +52,8 @@ router.get('/openLocker', (req, res, next) => {
 })
 
 router.get('/returnRobot', (req,res,next)=> {
-    avocabot.returnAvocabot()
-    if(avocabot.callReturnRobot==true) {
+    avocabot.sendAvocabot();
+    if(avocabot.callReturnRobot == true) {
         res.status(200).send('success');
     } else {
         res.status(200).send('not success');

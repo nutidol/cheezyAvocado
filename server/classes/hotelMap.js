@@ -35,8 +35,8 @@ class HotelMap {
         }
         let reversedBase = this.getInstructionsToNodeI(currentNode);
         if(destinationNode == 'I') return reversedBase;
-        if(destinationNode == 'J') return [...reversedBase].concat(instructionFromNodeI['J']);
-        if(destinationNode == 'K') return [...reversedBase].concat(instructionFromNodeI['K']);
+        if(destinationNode == 'J') return [...reversedBase].concat(this.instructionsFromNodeI['J']);
+        if(destinationNode == 'K') return [...reversedBase].concat(this.instructionsFromNodeI['K']);
 
         if(destinationNode != 'I' || destinationNode != 'J' || destinationNode != 'K') {
             throw "Unsupported combination of starting point and destination";

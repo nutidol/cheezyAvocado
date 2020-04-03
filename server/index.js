@@ -215,11 +215,6 @@ app.get('/finish', function (req, res) {
   avocabot.execute();
 });
 
-app.get('/sendOrder',(req,res)=>{
-  res.send('OK');
-  avocabot.closeLocker();
-});
-
 //------------------------------------------------Test mqtt async------------------------------------------------
 
 // let client = mqtt.connect('mqtt://broker.mqttdashboard.com');
