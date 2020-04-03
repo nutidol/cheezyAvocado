@@ -123,88 +123,26 @@ app.get('/addGuest',(req,res)=>{
 
 // client.publish('cheezyavocado','Test');
 
-//------------------------------------------------Test public mqtt with Tam--------------------------------------------
-// const client = require('./config/mqtt.js');
-// // // Connect MQTT
-// client.on('connect', function () {
-//   // Subscribe any topic
-//   console.log("MQTT Connect");
-//   client.subscribe('esifijighpwajo', function (err) {
-//       if (err) {
-//           console.log(err);
-//       }
-     
-//   });
-// });
-
-// client.on('connect', function () {
-//   console.log("MQTT Connect to Staff openlocker function");
-//   client.publish("test", "1"); // send 1 means open LED
-// });
-
-// Receive Message and print on terminal
-// client.on('message', function (topic, message) {
-//   // message is Buffer
-//   console.log(message.toString());
-// });
-
-
-
-// client.on('connect', function () {
-//   console.log("MQTT Connect publish");
-//   client.publish('esifijighpwajo', "hello from NodeJS");
-     
-// });
-
-//------------------------------------------------Test cayenne mqtt ------------------------------------------------
-
-//Not working
-
-// var Cayenne = require('cayenne-mqtt');
+//------------------------------------------------Test Cloud MQTT------------------------------------------------
+// Worked!!
+// const mqtt = require('mqtt');
 // var options = {
-//   'clientId' : '3185d220-6dc5-11ea-b301-fd142d6c1e6c',
-//   'username' : '97bc8410-6ceb-11ea-b301-fd142d6c1e6c',
-//   'password' : '1fdc8ecb6167cf2eee213597b72a2af0d0ac3c5c'
-// }
-// var Client = new Cayenne.Client(options);
-// Client.connect();
- 
-// var Ch0 = Client.Channel('0');
-// var Ch1 = Client.Channel('1');
- 
-// Ch1.on('message',function(msg){   
-//   if(msg == '1') Ch2.publish('0');
-//   if(msg == '0') Ch2.publish('1');
-// });
+//   port: 17267,
+//   host: 'mqtt://soldier.cloudmqtt.com',
+//   clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
+//   username: 'vfmquhui',
+//   password: 'yXMUCDc8eoO8',
+//   keepalive: 60,
+//   reconnectPeriod: 1000,
+//   protocolId: 'MQIsdp',
+//   protocolVersion: 3,
+//   clean: true,
+//   encoding: 'utf8'
+// };
+// const client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
 
-// Ch0.publish('0');
-
-//------------------------------------------------Test cayenne mqtt 2------------------------------------------------
-
-// var client = mqtt.connect('mqtt://mqtt.mydevices.com',{
-//     port: 1883,  
-//     clientId: '3185d220-6dc5-11ea-b301-fd142d6c1e6c',  
-//     username: '97bc8410-6ceb-11ea-b301-fd142d6c1e6c',  
-//     password: '1fdc8ecb6167cf2eee213597b72a2af0d0ac3c5c'
-//     //connectTimeout: 5000  
-// });
-
-// client.on('connect', function () {
-//   client.subscribe('presence', function (err) {
-//     if (!err) {
-//       client.publish('presence', 'Hello mqtt')
-//       console.log('connected!');
-//     }
-//   })
-//   client.subscribe('cheezy',(err)=>{
-//     if(!err) {
-//       //client.publish('avocado!')
-//       console.log('subscribed to cheezy!');
-//     }
-//   })
-// })
-
-// client.publish('cheezyavocado','Test');
+// client.publish('Test','Test');
+//client.publish('test/controlBell','101ON');
 
 //------------------------------------------------Test delivery system------------------------------------------------
 order = new Order('1111','Kitchen','101');

@@ -51,8 +51,11 @@ class Avocabot {
         if(status) {
           this.currentDestination.order.updateStatus(status);
         }
-        //TODO: MQTT Ring bell
-        //TODO: Socket.emit to frontend to allow open avocabot
+        //MQTT: Ring bell
+        let destination = this.currentDestination.destination;
+        let message = 'test/' + destination + 'ON';
+        client.publish('controlBell',message);
+        //TODO: Socket.emit to frontend to allow open avocabot - Wait for Tam
         //Set timeout for 30 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
@@ -93,31 +96,35 @@ class Avocabot {
 
     turnLeft() {
       console.log('turn left');
+      client.publish('test/turnLeft');
     }
 
     turnRight() {
       console.log('turn right');
+      client.publish('test/turnRight');
     }
 
     forward(distance) {
       console.log('forward ' + distance);
-      client.publish('Cheezy','Forward');
+      client.publish('test/forward',distance);
     }
 
     backward(distance) {
       console.log('backward' + distance);
+      client.publish('test/backward',distance);
     }
 
     enterHome() {
       console.log('Enter home');
+      client.publish('test/enterHome');
     }
 
     exitHome() {
       console.log('Exit home');
-      client.publish('Cheezy','exitHome');
+      client.publish('test/exitHome');
     }   
     
-    openLocker() {
+    openLocker(roomNumber) {
       //Check whether avocabot is at the destination
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
@@ -125,9 +132,9 @@ class Avocabot {
         console.log('Someone is trying to open the locker while the avocabot is not at the destination!');
         return;
       }
-      //FIXME: MQTT Tell avocabot to open locker (turn on the light)
-      client.publish('Cheezy','openLocker');
-      //TODO: MQTT Receive response from robot
+      //MQTT: Tell avocabot to open locker (turn on the light)
+      client.publish('test/openLocker');
+      //TODO: MQTT Receive response from robot - Wait for Tam
       this.lockerIsOpen = true;
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
         clearInterval(this.currentTimeout);
@@ -147,7 +154,7 @@ class Avocabot {
       }
       this.callReturnRobot = false;
       //TODO: MQTT turn light off
-      //TODO: MQTT receive response from robot when leave guest room
+      //TODO: MQTT receive response from robot when leave guest room <- ??
       clearInterval(this.currentTimeout);
       this.lockerIsOpen = false;
       //if send robot success
@@ -158,42 +165,3 @@ class Avocabot {
 }
 
 module.exports = Avocabot;
-
-// // Connect MQTT
-// client.on('connect', function () {
-//   // Subscribe any topic
-//   console.log("MQTT Connect");
-//   client.subscribe('test', function (err) {
-//       if (err) {
-//           console.log(err);
-//       }
-     
-//   });
-// });
-
-// client.on('connect', function () {
-//   console.log("MQTT Connect to Staff openlocker function");
-//   client.publish("test", "1"); // send 1 means open LED
-// });
-
-// Receive Message and print on terminal
-// client.on('message', function (topic, message) {
-//   // message is Buffer
-//   console.log(message.toString());
-// });
-
-
-
-// client.on('connect', function () {
-//   console.log("MQTT Connect publish");
-//   client.publish('test', "hello from NodeJS");
-     
-// });
-
-
-
-
-//NOT USE BUT KEEP IT
-// setInterval(() => {
-//   client.publish("test", "hello from NodeJS");
-// }, 5000);
