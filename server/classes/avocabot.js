@@ -51,7 +51,7 @@ class Avocabot {
         if(status) {
           this.currentDestination.order.updateStatus(status);
         }
-        //TODO: Ring bell
+        //TODO: MQTT Ring bell
         //TODO: Socket.emit to frontend to allow open avocabot
         //Set timeout for 30 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
@@ -125,9 +125,9 @@ class Avocabot {
         console.log('Someone is trying to open the locker while the avocabot is not at the destination!');
         return;
       }
-      //MQTT: Tell avocabot to open locker (turn on the light)
+      //FIXME: MQTT Tell avocabot to open locker (turn on the light)
       client.publish('Cheezy','openLocker');
-      //TODO: Receive response from robot
+      //TODO: MQTT Receive response from robot
       this.lockerIsOpen = true;
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
         clearInterval(this.currentTimeout);
@@ -146,8 +146,8 @@ class Avocabot {
         return;
       }
       this.callReturnRobot = false;
-      //MQTT: turn light off
-      //receive response from robot when leave guest room
+      //TODO: MQTT turn light off
+      //TODO: MQTT receive response from robot when leave guest room
       clearInterval(this.currentTimeout);
       this.lockerIsOpen = false;
       //if send robot success
