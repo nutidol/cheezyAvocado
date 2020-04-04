@@ -36,15 +36,15 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
-//TODO: Move credentials to .env - Nat
+//TODO: Move credentials to .env
 
 const mqtt = require('mqtt');
 const options = {
     port: 17267,
-    host: 'mqtt://soldier.cloudmqtt.com',
+    host: process.env.MQTT_HOST,
     clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
-    username: 'vfmquhui',
-    password: 'yXMUCDc8eoO8',
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASSWORD,
     keepalive: 60,
     reconnectPeriod: 1000,
     protocolId: 'MQIsdp',
