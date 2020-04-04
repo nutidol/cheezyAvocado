@@ -36,7 +36,28 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
+//TODO: Move credentials to .env
+
 const mqtt = require('mqtt');
-client = mqtt.connect('mqtt://broker.hivemq.com');
+const options = {
+    port: 17267,
+    host: process.env.MQTT_HOST,
+    clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASSWORD,
+    keepalive: 60,
+    reconnectPeriod: 1000,
+    protocolId: 'MQIsdp',
+    protocolVersion: 3,
+    clean: true,
+    encoding: 'utf8'
+  };
+client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
 
-
+orderStatus = {
+  PENDING :'pending',
+  APPROVED : 'approved',
+  ONTHEWAY : 'on the way',
+  ARRIVED : 'arrived',
+  MISSED : 'missed'
+};

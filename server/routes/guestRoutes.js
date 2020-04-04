@@ -38,27 +38,28 @@ router.get('/getBillPayments', (req, res, next) => {
 //openRobotLocker
 //version 1,, use HTTP
 router.get('/openLocker', (req, res, next) => {
-    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    console.log(openLockerStatus);
-    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+    // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+    // console.log(openLockerStatus);
+    // if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
         avocabot.openLocker() 
-        if(avocabot.lockerIsOpen==true) {
-        res.status(200).send('success');
-        } else {
-            res.status(200).send('not success')
-        }
-     } else {
-        res.status(200).send('not success')
-    }
-})
+    //     if(avocabot.lockerIsOpen==true) {
+    //     res.status(200).send('success');
+    //     } else {
+    //         res.status(200).send('not success')
+    //     }
+    //  } else {
+    //     res.status(200).send('not success')
+    // }
+        res.send('OK'); //Every HTTP Get has to have some response.
+});
 
 router.get('/returnRobot', (req,res,next)=> {
     avocabot.sendAvocabot();
-    if(avocabot.callReturnRobot == true) {
-        res.status(200).send('success');
-    } else {
-        res.status(200).send('not success');
-    }
+    // if(avocabot.callReturnRobot == true) {
+    //     res.status(200).send('success');
+    // } else {
+    //     res.status(200).send('not success');
+    // }
 })
 
 
