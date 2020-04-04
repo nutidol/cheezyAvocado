@@ -92,37 +92,6 @@ app.get('/addGuest',(req,res)=>{
     })
   });
 
-
-//------------------------------------------------Test Public MQTT------------------------------------------------
-
-//Worked! But not work with our avocabot.
-// const mqtt = require('mqtt');
-// var client  = mqtt.connect('mqtt://broker.mqttdashboard.com')
-
-// client.on('connect', function () {
-//   client.subscribe('presence', function (err) {
-//     if (!err) {
-//       client.publish('presence', 'Hello mqtt')
-//       console.log('connected!');
-//     }
-//   })
-//   client.subscribe('cheezy',(err)=>{
-//     if(!err) {
-//       //client.publish('avocado!')
-//       console.log('subscribed to cheezy!');
-//     }
-//   })
-// })
-
-// client.on('message', (topic, message) => {
-//   if(topic == 'cheezy') {
-//     console.log(topic);
-//     console.log(message.toString());
-//   }
-// })
-
-// client.publish('cheezyavocado','Test');
-
 //------------------------------------------------Test Cloud MQTT------------------------------------------------
 // Worked!!
 // const mqtt = require('mqtt');
@@ -142,17 +111,19 @@ app.get('/addGuest',(req,res)=>{
 // const client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
 
 // client.publish('Test','Test');
-//client.publish('test/controlBell','101ON');
+// client.publish('test/controlBell','101ON');
+
+client.subscribe('finished',{qos:1});
+
+client.on('message', (topic, message) => {
+  if(topic == 'finished') {
+    avocabot.execute();
+  }
+})
 
 //------------------------------------------------Test delivery system------------------------------------------------
 order = new Order('1111','Kitchen','101');
 queue.addToQueue(order);
-
-app.get('/finish', function (req, res) {
-  res.send('OK');
-  avocabot.execute();
-});
-
 //------------------------------------------------Test mqtt async------------------------------------------------
 
 // let client = mqtt.connect('mqtt://broker.mqttdashboard.com');

@@ -37,27 +37,28 @@ router.get('/getBillPayments', (req, res, next) => {
 //openRobotLocker
 //version 1,, use HTTP
 router.get('/openLocker', (req, res, next) => {
-    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    console.log(openLockerStatus);
-    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+    // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+    // console.log(openLockerStatus);
+    // if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
         avocabot.openLocker() 
-        if(avocabot.lockerIsOpen==true) {
-        res.status(200).send('success');
-        } else {
-            res.status(200).send('not success')
-        }
-     } else {
-        res.status(200).send('not success')
-    }
-})
+    //     if(avocabot.lockerIsOpen==true) {
+    //     res.status(200).send('success');
+    //     } else {
+    //         res.status(200).send('not success')
+    //     }
+    //  } else {
+    //     res.status(200).send('not success')
+    // }
+        res.send('OK'); //Every HTTP Get has to have some response.
+});
 
 router.get('/returnRobot', (req,res,next)=> {
     avocabot.sendAvocabot();
-    if(avocabot.callReturnRobot == true) {
-        res.status(200).send('success');
-    } else {
-        res.status(200).send('not success');
-    }
+    // if(avocabot.callReturnRobot == true) {
+    //     res.status(200).send('success');
+    // } else {
+    //     res.status(200).send('not success');
+    // }
 })
 
 
@@ -108,12 +109,13 @@ router.post('/placeOrder', (req,res)=>{
             const dateTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
             console.log(dateTime);
             if(department == 'food'){
-
-                io.emit('kitchenOrder', order)
+                //MQTT: send data to frontend staff app
+                client.publish('frontend/staff/placeOrder');
+                client.publish('frontend/guest/placeOrder', orderID);
                 
             }else if (department == 'amenity'){
-
-                io.emit('houseKeepingOrder', order)
+                client.publish('frontend/staff/placeOrder');
+                client.publish('frontend/guest/placeOrder', orderID);
 
             }else{
                 res.send('Incorrect department');

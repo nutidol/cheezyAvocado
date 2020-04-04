@@ -36,6 +36,8 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
+//TODO: Move credentials to .env - Nat
+
 const mqtt = require('mqtt');
 const options = {
     port: 17267,
@@ -52,4 +54,10 @@ const options = {
   };
 client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
 
-
+orderStatus = {
+  PENDING :'pending',
+  APPROVED : 'approved',
+  ONTHEWAY : 'on the way',
+  ARRIVED : 'arrived',
+  MISSED : 'missed'
+};
