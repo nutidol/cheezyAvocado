@@ -13,6 +13,7 @@ router.use(morgan('dev'));
 router.use(bodyParser.json());
 
 var orderID = 2;
+var updateKitchenOrder = false;
 
 
 // test route
@@ -69,10 +70,18 @@ io.on('connection', function (socket) {
     //     console.log(openLockerStatus);
     // });
     // //End ON Events
+
+    if(updateKitchenOrder){
+        io.emit('kitchenOrder','there has been an order');
+        updateKitchenOrder = false;
+    }
+
+    io.emit('amenityOrder','there has been an order');
+
+    //End ON Events
 });
 
 
-module.exports = router;
 
 
 
@@ -85,51 +94,159 @@ module.exports = router;
 //   });
 // place order 
 
+
+
 router.post('/placeOrder', (req,res)=>{
-    const query = 'SELECT count(*) FROM "order"'
-    pool.query(query, (error, results) =>{
-        if(error) {
+    const {department, order, reservationID, roomNumber,totalCost} = req.body;
+    console.log(order)
+    const ts = Date.now();
+    var date_ob = new Date(ts);
+    var year = date_ob.getFullYear();
+    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    var date = ("0" + date_ob.getDate()).slice(-2);
+    var hours = ("0" + date_ob.getHours()).slice(-2);
+    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    console.log(timestamp);
+    var departmentID;
+    if(department == 'food'){
+        io.on('connection', function (socket) {        
+            io.emit('kitchenOrder','there has been an order');   
+            client.publish('frontend/kitchenOrder','there is a new kitchen order'); 
+            departmentID = 1;        
+        });
+    }else if (department == 'amenity'){
+        io.emit('houseKeepingOrder', order)
+        client.publish('frontend/amenityOrder','there is a new amenity order');    
+        departmentID = 2; 
+
+    }else{
+        res.send('Incorrect department');
+    } 
+    
+    // if(department == 'food'){
+    //     const queryFood = 'INSERT into "order"(status, timestamp,"roomNumber", "departmentID") VALUES (\'pending\',\''+timestamp+'\',\''+roomNumber+'\',\''+'1'+ '\')';
+    //     pool.query(queryFood, (error, results1) =>{
+    //         if(error){
+    //             throw error
+    //         }
+    //         if(results1){
+    //             console.log('inserted');
+    //             const getOrderIDQuery = 'select \"orderID\" from \"order\" where \"timestamp\"=\''+timestamp+ '\';';
+    //             pool.query(getOrderIDQuery,(error,results4) =>{
+    //                 if(error){
+    
+    //                 }
+    //                 if(results4){
+    //                     console.log(results4.rows[0].orderID);
+    //                     const currentOrderID = results4.rows[0].orderID; 
+    //                         for (i = 0; i < order.length; i++) {
+    //                             const thisOrder = order[i]
+    //                             const foodQuery = 'INSERT into "orderFood"("orderID","foodID",amount) VALUES (\''+ currentOrderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')';
+    //                             pool.query(foodQuery, (error, results2) =>{
+    //                                 if(error){
+    //                                     throw error
+    //                                 }
+    //                                 if(results2){
+    //                                     console.log('inserted food order '+ i );
+    //                                 }
+    //                             });
+    //                         }
+    //                         console.log('the reservation id is ' + reservationID);
+    //                         const serviceBillQuery = 'select "invoiceNumber","totalAmount" from "serviceBill" where "reservationID" =\''+reservationID+'\''
+    //                         pool.query(serviceBillQuery, (error, results5) =>{
+    //                             if(error){
+    //                                 throw error
+    //                             }
+    //                             if(results5){
+    //                                 // console.log(results5)
+    //                                 if(results5.rowCount==0){
+    //                                     const newServiceBillQuery = 'INSERT into "serviceBill"(timestamp,"totalAmount","reservationID") VALUES (\''+timestamp+'\',\''+totalCost+'\',\''+reservationID+'\')';
+    //                                     pool.query(newServiceBillQuery,(error, results6) =>{
+    //                                         if(error){
+    //                                             throw error
+    //                                         }else{
+    //                                             console.log('a new service bill has been created');
+    //                                         }
+    //                                     })
+    //                                 }else{
+    //                                     const newTotal = parseInt(totalCost)+ parseInt(results5.rows[0].totalAmount);
+    //                                     const updateBillQuery = 'UPDATE "serviceBill" SET "totalAmount" = \''+newTotal+'\' where "reservationID"=\''+reservationID+'\'';
+    //                                     pool.query(updateBillQuery, (error, results7)=>{
+    //                                         if(error){
+    //                                             throw error
+    //                                         } else{
+    //                                             console.log('the service bill has been updated');
+    //                                         }
+    //                                     });
+                            
+    //                                 }
+    //                             } 
+    //                         });
+    //                         res.status(200).json({orderID: currentOrderID});                         
+                        
+    //                 }
+    //             })
+    //         }    
+    //     });
+
+    // }else if (department == 'amenity'){
+    //     const queryAmenity = 'INSERT into "order"(status, timestamp,"roomNumber", "departmentID") VALUES (\'pending\',\''+timestamp+'\',\''+roomNumber+'\',\''+'2'+ '\')';
+    //     pool.query(queryAmenity, (error, results1) =>{
+    //         if(error){
+    //             throw error
+    //         }
+    //         if(results1){
+    //             console.log('inserted');
+    //             const getOrderIDQuery = 'select \"orderID\" from \"order\" where \"timestamp\"=\''+timestamp+ '\';';
+    //             pool.query(getOrderIDQuery,(error,results4) =>{
+    //                 if(error){
+    
+    //                 }
+    //                 if(results4){
+    //                     console.log(results4.rows[0].orderID);
+    //                     const currentOrderID = results4.rows[0].orderID;
+    //                         for (i = 0; i < order.length; i++) {
+    //                             const thisOrder = order[i]
+    //                             const housekeepingQuery = 'INSERT into "orderAmenity"("orderID","amenityID",amount) VALUES (\''+ currentOrderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
+    //                             pool.query(housekeepingQuery, (error, results2) =>{
+    //                                 if(error){
+    //                                     throw error
+    //                                 }
+    //                                 if(results2){
+    //                                     console.log('inserted amenity order '+ i );
+    //                                 }
+    //                             });
+    //                          } 
+    //                         res.status(200).json({orderID: currentOrderID});
+    //                 }
+    //             })
+    //         }    
+    //     });
+    // }
+
+
+
+    const query = 'INSERT into "order"(status, timestamp,"roomNumber", "departmentID") VALUES (\'pending\',\''+timestamp+'\',\''+roomNumber+'\',\''+'1'+ '\')';
+    pool.query(query, (error, results1) =>{
+        if(error){
             throw error
         }
-        if(results){
-            const orderID = parseInt(results.rows[0].count) + 1;
-            console.log("orderID is " + orderID);
-            const {department, order} = req.body;
-            console.log(order)
-            const timestamp = '00:00:00'
-            const ts = Date.now();
-            var date_ob = new Date(ts);
-            var year = date_ob.getFullYear();
-            var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-            var date = ("0" + date_ob.getDate()).slice(-2);
-            var hours = ("0" + date_ob.getHours()).slice(-2);
-            var minutes = ("0" + date_ob.getMinutes()).slice(-2);
-            var seconds = ("0" + date_ob.getSeconds()).slice(-2);
-            const dateTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-            console.log(dateTime);
-            if(department == 'food'){
-
-                io.emit('kitchenOrder', order)
-                
-            }else if (department == 'amenity'){
-
-                io.emit('houseKeepingOrder', order)
-
-            }else{
-                res.send('Incorrect department');
-            }     
-
-            const query = 'INSERT into "order"("orderID", duration, status, timestamp, "departmentID", "guestID", "invoiceNumber","datetime") VALUES (\''+orderID+'\',\'1\',\'pending\',\''+timestamp+'\',\'1\',\'001\',\'12345678\',\''+dateTime+ '\')';
-            pool.query(query, (error, results1) =>{
+        if(results1){
+            console.log('inserted');
+            const getOrderIDQuery = 'select \"orderID\" from \"order\" where \"timestamp\"=\''+timestamp+ '\';';
+            pool.query(getOrderIDQuery,(error,results4) =>{
                 if(error){
-                    throw error
+
                 }
-                if(results1){
-                    console.log('inserted');
-                    if(department == 'food'){
+                if(results4){
+                    console.log(results4.rows[0].orderID);
+                    const currentOrderID = results4.rows[0].orderID;
+                    if(department == 'food'){   
                         for (i = 0; i < order.length; i++) {
                             const thisOrder = order[i]
-                            const foodQuery = 'INSERT into "orderFood"("orderID","foodID",amount) VALUES (\''+ orderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
+                            const foodQuery = 'INSERT into "orderFood"("orderID","foodID",amount) VALUES (\''+ currentOrderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')';
                             pool.query(foodQuery, (error, results2) =>{
                                 if(error){
                                     throw error
@@ -138,12 +255,43 @@ router.post('/placeOrder', (req,res)=>{
                                     console.log('inserted food order '+ i );
                                 }
                             });
-                        }  
-                        res.status(200).json({orderID: orderID.toString()})
+                        }
+                        console.log('the reservation id is ' + reservationID);
+                        const serviceBillQuery = 'select "invoiceNumber","totalAmount" from "serviceBill" where "reservationID" =\''+reservationID+'\''
+                        pool.query(serviceBillQuery, (error, results5) =>{
+                            if(error){
+                                throw error
+                            }
+                            if(results5){
+                                // console.log(results5)
+                                if(results5.rowCount==0){
+                                    const newServiceBillQuery = 'INSERT into "serviceBill"(timestamp,"totalAmount","reservationID") VALUES (\''+timestamp+'\',\''+totalCost+'\',\''+reservationID+'\')';
+                                    pool.query(newServiceBillQuery,(error, results6) =>{
+                                        if(error){
+                                            throw error
+                                        }else{
+                                            console.log('a new service bill has been created');
+                                        }
+                                    })
+                                }else{
+                                    const newTotal = parseInt(totalCost)+ parseInt(results5.rows[0].totalAmount);
+                                    const updateBillQuery = 'UPDATE "serviceBill" SET "totalAmount" = \''+newTotal+'\' where "reservationID"=\''+reservationID+'\'';
+                                    pool.query(updateBillQuery, (error, results7)=>{
+                                        if(error){
+                                            throw error
+                                        } else{
+                                            console.log('the service bill has been updated');
+                                        }
+                                    });
+                        
+                                }
+                            } 
+                        });
+                        res.status(200).json({orderID: currentOrderID});                         
                     }else if (department == 'amenity'){
                         for (i = 0; i < order.length; i++) {
                             const thisOrder = order[i]
-                            const housekeepingQuery = 'INSERT into "orderAmenity"("orderID","amenityID",amount) VALUES (\''+ orderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
+                            const housekeepingQuery = 'INSERT into "orderAmenity"("orderID","amenityID",amount) VALUES (\''+ currentOrderID+'\',\''+thisOrder.id+'\',\''+thisOrder.amount+'\')'
                             pool.query(housekeepingQuery, (error, results2) =>{
                                 if(error){
                                     throw error
@@ -152,16 +300,26 @@ router.post('/placeOrder', (req,res)=>{
                                     console.log('inserted amenity order '+ i );
                                 }
                             });
-                        } 
-                        res.status(200).json({orderID: orderID.toString()})
+                         } 
+                        res.status(200).json({orderID: currentOrderID});
                     }else{
                         res.send('Incorrect department');
                     }
                 }
-            })  
-        }
+            })
+        }    
     });
 });
+
+
+
+router.get('/testOrder',(req,res)=>{
+    // updateKitchenOrder = true;
+    client.publish('frontend/kitchenOrder','there is a new kitchen order');  
+    client.publish('frontend/amenityOrder','there is a new amenity order');    
+    res.send('okay');
+});
+
 
 // router.get('/test', (req,res,) =>{
 //     var ts = Date.now();

@@ -77,28 +77,28 @@ router.get('/', (req, res) => {
 
 router.post('/guest', (req,res) =>{ //return customerID 
     const {roomNumber, lastName, password} = req.body;
-    const query = 'SELECT * FROM guest,room WHERE \"roomNumber\"=\''+roomNumber+'\'';
+    const query = 'SELECT * FROM \"staysIn\",\"guest\" WHERE \"guestLastName\"=\''+lastName+'\' and \"password\"=\''+password+'\' and guest.\"guestID\"=\"staysIn\".\"guestID\" and \"roomNumber\"=\''+roomNumber;
 
     pool.query(query, (error, results) => {
         if (error) {
           throw error
         }
-        console.log(results.rows[0]);
-        if(results.rows[0]){
-            const {guestLastName, checkInDate, checkOutDate, guestFirstName} = results.rows[0];
-            const guestPassword = results.rows[0].password;
-            const guestroomNumber = results.rows[0].roomNumber;
-            console.log(guestLastName,checkInDate);
-            if(guestLastName == lastName && guestPassword== password){
-                console.log('you\'re in ');
-                const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName}, accessTokenSecret)
-                res.json({accessToken,roomNumber,guestFirstName,guestLastName});
-            }else{
-                res.send('Incorrect data');
-            }
-        }else{
-            res.send('Incorrect data');
-        }
+        console.log(results);
+        // if(results.rows[0]){
+        //     const {guestLastName, checkInDate, checkOutDate, guestFirstName, guestID} = results.rows[0];
+        //     const guestPassword = results.rows[0].password;
+        //     const guestroomNumber = results.rows[0].roomNumber;
+        //     console.log(guestLastName,checkInDate);
+        //     if(guestLastName == lastName && guestPassword== password){
+        //         console.log('you\'re in ');
+        //         const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName, guestID: guestID}, accessTokenSecret)
+        //         res.json({accessToken,roomNumber,guestFirstName,guestLastName, guestID});
+        //     }else{
+        //         res.send('Incorrect data');
+        //     }
+        // }else{
+        //     res.send('Incorrect data');
+        // }
     })
 
     // console.log(req.body);
