@@ -72,21 +72,37 @@ app.get('/addGuest',(req,res)=>{
 
   console.log('insert parameter')
   
-  pool.query(sql1,  (error, results1) => {
+  pool.query(sql1,  (error, results) => {
       if (error) {
         console.log('error')
         throw error;
       }
-        //res.status(200).json(results1)
-        //res.status(200).send('added new guest');
         console.log('add to guest')
     })
-    pool.query(sql2,  (error, results2) => {
+
+    const query = 'SELECT * FROM guest WHERE \"guestID\"=\''+guestID+'\'';
+    //not sure if this will be error if there is no this guestID in db
+    const addedGuestID = "";
+    pool.query(query, (error, results) => {
       if (error) {
         console.log('error')
         throw error;
         }
-      //res.status(200).json(results2.rows)
+      console.log(results);
+      addedGuestID = results.rows[0].guestID;
+    })
+
+    while(true) {
+      if(addedGuestID=guestID) {
+        break;
+      }
+    }
+    pool.query(sql2,  (error, results) => {
+      if (error) {
+        console.log('error')
+        throw error;
+        }
+      //res.status(200).json(results.rows)
         res.status(200).send('added new guest');
         console.log('add to room')
     })

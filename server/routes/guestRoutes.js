@@ -36,39 +36,39 @@ router.get('/getBillPayments', (req, res, next) => {
 
 //openRobotLocker
 //version 1,, use HTTP
-router.get('/openLocker', (req, res, next) => {
-    const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    console.log(openLockerStatus);
-    if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-        avocabot.openLocker() 
-        if(avocabot.lockerIsOpen==true) {
-        res.status(200).send('success');
-        } else {
-            res.status(200).send('not success')
-        }
-     } else {
-        res.status(200).send('not success')
-    }
-})
+//router.get('/openLocker', (req, res, next) => { 
+//     const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+//   if(openLockerStatus == 1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+//       const openLockerSuccess = avocabot.openLocker();
+//         if(openLockerSuccess == true) {
+//             res.send('success');
+//         } else {
+//             res.send('not success') //FIXME: Status 200 shouldn't be used for 'not success'
+//         }
+//      } else {
+//         res.send('not success')
+//     }
+// })
 
-router.get('/returnRobot', (req,res,next)=> {
-    avocabot.sendAvocabot();
-    if(avocabot.callReturnRobot == true) {
-        res.status(200).send('success');
-    } else {
-        res.status(200).send('not success');
-    }
-})
+
+// router.get('/returnRobot', (req,res,next)=> {
+//     avocabot.sendAvocabot();
+//     if(avocabot.callReturnRobot == true) {
+//         res.status(200).send('success');
+//     } else {
+//         res.status(200).send('not success');
+//     }
+// })
 
 
 io.on('connection', function (socket) {
     console.log('User has connected to guestRoutes');
-    //ON Events
-    // socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend(receive from page.html(mockup))
-    //     io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
-    //     console.log(openLockerStatus);
-    // });
-    // //End ON Events
+   // ON Events
+    socket.on('openLockerStatus' , openLockerStatus => { //wait from frontend(receive from page.html(mockup))
+        io.emit('openLockerStatusToRobot', openLockerStatus); //emit to robot(have to change)
+        console.log(openLockerStatus);
+    });
+    //End ON Events
 });
 
 

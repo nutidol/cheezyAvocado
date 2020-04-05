@@ -123,8 +123,9 @@ class Avocabot {
       let destinationNode = this.currentPosition;
       if(currentNode != destinationNode) {
         console.log('Someone is trying to open the locker while the avocabot is not at the destination!');
-        return;
+        return ;
       }
+      this.lockerIsOpen = false;
       //FIXME: MQTT Tell avocabot to open locker (turn on the light)
       client.publish('Cheezy','openLocker');
       //TODO: MQTT Receive response from robot
@@ -145,14 +146,20 @@ class Avocabot {
         console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
         return;
       }
-      this.callReturnRobot = false;
+      //this.callReturnRobot = false;
       //TODO: MQTT turn light off
       //TODO: MQTT receive response from robot when leave guest room
+      //if success, call checkStatus()
+      this.checkStatus()
       clearInterval(this.currentTimeout);
-      this.lockerIsOpen = false;
+      //this.lockerIsOpen = false;
       //if send robot success
       this.callReturnRobot = true;
       this.controller.retrieveFromQueue();
+    }
+
+    checkStatus() {
+      return true;
     }
     
 }
