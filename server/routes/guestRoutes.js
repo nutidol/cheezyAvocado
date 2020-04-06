@@ -113,14 +113,17 @@ router.post('/placeOrder', (req,res)=>{
     console.log(timestamp);
     var departmentID;
     if(department == 'food'){
-        io.on('connection', function (socket) {        
-            io.emit('kitchenOrder','there has been an order');   
-            client.publish('frontend/kitchenOrder','there is a new kitchen order'); 
-            departmentID = 1;        
-        });
+        // USE mqtt instead of socket
+        // io.on('connection', function (socket) {        
+        //     io.emit('kitchenOrder','there has been an order');   
+        client.publish('frontend/guest/kitchenOrer', order); //publish to guest app
+        client.publish('frontend/staff/kitchenOrder','there is a new kitchen order'); //publish to staff app
+        departmentID = 1;        
     }else if (department == 'amenity'){
-        io.emit('houseKeepingOrder', order)
-        client.publish('frontend/amenityOrder','there is a new amenity order');    
+        // USE mqtt instead of socket
+        // io.emit('houseKeepingOrder', order)
+        client.publish('frontend/guest/amenityOrder', order); //publish to guest app
+        client.publish('frontend/staff/amenityOrder','there is a new amenity order'); //publish to staff app
         departmentID = 2; 
 
     }else{

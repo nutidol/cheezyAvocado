@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const router = express.Router();
 require('../global');
+const Order = require('../classes/order');
 
 router.use(morgan('dev'));
 const io = require('../config/server').io
@@ -16,30 +17,50 @@ router.get('/', (req, res) => {
     res.send('this is from server file!');
 });
 
-// io.on('connection', function (socket) {
-//     console.log('User has connected to staffRoutes');
-//         //ON Events
-//         socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
-//             //query order from that department 
-//             console.log(department);
-//         });
+io.on('connection', function (socket) {
+    console.log('User has connected to staffRoutes');
+        // //ON Events
+        // socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
+        //     //query order from that department 
+        //     console.log(department);
+        // });
     
-//         //End ON Events
-// });
+        // //End ON Events
+});
 
-// socketGetOrders
-    //parameter = String department
+router.get('/getAmenityOrders', (req, res) => {
     //database querying
     //return orders for that department
+    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID"';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
+            throw error
+        }
+        // console.log(results.rows);
+        // console.log(results.rowCount);
+        client.publish('frontend/staff/getAmenityOrders', results.rows); //publish to staff app
+    res.status(200).json(results.rows);
+    })
+});
 
-//MQTT: receive response from staff app
-// getOrder yung mai sed
-client.on('message', (topic, message) => {
-    if(topic == 'getOrder') {
-        console.log(topic);
-        this.callReturnRobot = true;
-    }
-}) 
+router.get('/getFoodOrders', (req, res) => {
+    //database querying
+    //return orders for that department
+    const query = 'SELECT "order"."roomNumber","order"."orderID","food"."foodName","orderFood"."amount","order"."timestamp" FROM "order","orderFood","food" WHERE "order"."orderID"="orderFood"."orderID" and "orderFood"."foodID"="food"."foodID"';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
+            throw error
+        }
+        // console.log(results.rows);
+        // console.log(results.rowCount);
+        client.publish('frontend/staff/getFoodOrders', results.rows);  //publish to staff app
+    res.status(200).json(results.rows);
+    })
+});
+
+
 
 // approveOrder route
 router.get('/acceptOrder', (req, res, next) => {
@@ -54,55 +75,93 @@ router.get('/acceptOrder', (req, res, next) => {
             throw error
         }
         // res.status(200).json(results.row)
-        console.log(results);
+        console.log(results.row);
     res.status(200).json('order approved');
     })
     //TODO: socket emit to frontend
 });
 
 
+// // readyOrder route
+// router.get('/foodFinished', (req, res, next) => {
+//     //Call avocabot
+//     let orderID = req.query.orderID;
+//     let departmentName;
+//     let roomNumber;
+//     const query1 = 'SELECT * FROM order WHERE \"orderID\"=\''+orderID+'\'';
+//     const departmentID = "";
+//     const roomNumber = "";
+//     pool.query(query1, (error, results) => {
+//         if (error) {
+//             throw error
+//           }
+//         console.log(results)
+//         departmentID = results.rows[0].departmentID;
+//         roomNumber = results.rows[0].roomNumber;
+//     })
+//     const departmentName = "";
+//     const query2 = 'SELECT * FROM department WHERE \"departmentID\"=\''+departmentId+'\'';
+//     pool.query(query2, (error, results) => {
+//         if (error) {
+//             throw error
+//           }
+//         console.log(results)
+//         departmentName = results.rows[0].departmentName;
+//     });
+//     //let departmentName = req.query.departmentName;
+//     //let roomNumber = req.query.roomNumber;
+//     order = new Order(orderID,departmentName,roomNumber);
+//     queue.addToQueue(order);
+//     res.send('OK');
+// });
+
+
+
 // readyOrder route
 router.get('/foodFinished', (req, res, next) => {
     //Call avocabot
     let orderID = req.query.orderID;
-    //TODO: Query database for departmentName and roomNumber
-    const query1 = 'SELECT * FROM order WHERE \"orderID\"=\''+orderID+'\'';
-    const departmentID = "";
-    const roomNumber = "";
-    pool.query(query1, (error, results) => {
+    let departmentName;
+    let roomNumber;
+    const query = 'select "department"."departmentName", "order"."roomNumber" from "order" , "department" WHERE "order"."orderID" = \''+orderID+'\' and "department"."departmentID" = "order"."departmentID"'
+    pool.query(query, (error, results) => {
         if (error) {
+            console.log(error);
             throw error
-          }
-        console.log(results)
-        departmentID = results.rows[0].departmentID;
-        roomNumber = results.rows[0].roomNumber;
-    })
-    const departmentName = "";
-    const query2 = 'SELECT * FROM department WHERE \"departmentID\"=\''+departmentId+'\'';
-    pool.query(query2, (error, results) => {
-        if (error) {
-            throw error
-          }
-        console.log(results)
+        }
         departmentName = results.rows[0].departmentName;
-    });
-    //let departmentName = req.query.departmentName;
-    //let roomNumber = req.query.roomNumber;
-    order = new Order(orderID,departmentName,roomNumber);
-    queue.addToQueue(order);
+        roomNumber = results.rows[0].roomNumber;
+        console.log(departmentName+','+roomNumber)
+        let order = new Order(orderID,departmentName,roomNumber);
+        queue.addToQueue(order);
+    })
     res.send('OK');
 });
+
+
+
+
+
 
 
 // sendOrder route
 router.get('/sendOrder', (req, res) => {
-    //1. Send Avocabot
+    //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
     //2. Socket emit to Guest
     //3. Database : Update status to 'on the way'
-    res.send('OK');
+    const orderNumber = req.query.orderID;
+    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "orderID" = orderNumber';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
+            throw error
+        }
+        // res.status(200).json(results.row)
+        console.log(results);
+    res.status(200).json('order on the way');
+    })
 });
-
 
 router.get('/openLocker', (req, res, next) => {
     // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
@@ -122,3 +181,5 @@ router.get('/openLocker', (req, res, next) => {
 
 
 module.exports = router;
+
+// database enum orderStatus: on the way, approved, pending, complete, error
