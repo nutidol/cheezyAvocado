@@ -16,23 +16,30 @@ router.get('/', (req, res) => {
     res.send('this is from server file!');
 });
 
-io.on('connection', function (socket) {
-    console.log('User has connected to staffRoutes');
-        //ON Events
-        socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
-            //query order from that department 
-            console.log(department);
-        });
+// io.on('connection', function (socket) {
+//     console.log('User has connected to staffRoutes');
+//         //ON Events
+//         socket.on('getOrder' , department => { //wait from frontend(receive from page.html(mockup))
+//             //query order from that department 
+//             console.log(department);
+//         });
     
-        //End ON Events
-});
+//         //End ON Events
+// });
 
 // socketGetOrders
     //parameter = String department
     //database querying
     //return orders for that department
 
-
+//MQTT: receive response from staff app
+// getOrder yung mai sed
+client.on('message', (topic, message) => {
+    if(topic == 'getOrder') {
+        console.log(topic);
+        this.callReturnRobot = true;
+    }
+}) 
 
 // approveOrder route
 router.get('/acceptOrder', (req, res, next) => {
@@ -56,7 +63,6 @@ router.get('/acceptOrder', (req, res, next) => {
 
 // readyOrder route
 router.get('/foodFinished', (req, res, next) => {
-
     //Call avocabot
     let orderID = req.query.orderID;
     //TODO: Query database for departmentName and roomNumber
@@ -84,7 +90,6 @@ router.get('/foodFinished', (req, res, next) => {
     //let roomNumber = req.query.roomNumber;
     order = new Order(orderID,departmentName,roomNumber);
     queue.addToQueue(order);
-    
     res.send('OK');
 });
 
@@ -99,18 +104,21 @@ router.get('/sendOrder', (req, res) => {
 });
 
 
-// router.get('/openLocker', (req, res, next) => {
-//     const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-//     if(openLockerStatus == 1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-//       const openLockerSuccess = avocabot.openLocker();
-//         if(openLockerSuccess == true) {
-//             res.send('success');
-//         } else {
-//             res.send('not success') //FIXME: Status 200 shouldn't be used for 'not success'
-//         }
-//      } else {
-//         res.send('not success')
-//     }
-// })
+router.get('/openLocker', (req, res, next) => {
+    // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
+    // console.log(openLockerStatus);
+    // if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
+        avocabot.openLocker() 
+    //     if(avocabot.lockerIsOpen==true) {
+    //     res.status(200).send('success');
+    //     } else {
+    //         res.status(200).send('not success')
+    //     }
+    //  } else {
+    //     res.status(200).send('not success')
+    // }
+        res.send('OK'); //Every HTTP Get has to have some response.
+});
+
 
 module.exports = router;
