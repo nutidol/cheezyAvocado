@@ -138,8 +138,8 @@ client.on('message', (topic, message) => {
 })
 
 //------------------------------------------------Test delivery system------------------------------------------------
-// order = new Order('1111','Kitchen','101');
-// queue.addToQueue(order);
+order = new Order('1111','Kitchen','101');
+queue.addToQueue(order);
 //------------------------------------------------Test mqtt async------------------------------------------------
 
 // let client = mqtt.connect('mqtt://broker.mqttdashboard.com');
