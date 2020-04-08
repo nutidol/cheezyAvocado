@@ -37,7 +37,7 @@ router.get('/getAmenityOrders', (req, res) => {
             throw error
         }
         // console.log(results.rows);
-        // console.log(results.rowCount);
+        console.log(results.rowCount);
     res.status(200).json(results.rows);
     })
 });
@@ -58,7 +58,7 @@ router.get('/getFoodOrders', (req, res) => {
 
 // approveOrder route
 router.get('/acceptOrder', (req, res, next) => {
-    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+    //receive orderid 
     const orderID = req.query.orderID;
     //set the order’s status to “approved”
     const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderID+'\'';
@@ -73,7 +73,7 @@ router.get('/acceptOrder', (req, res, next) => {
             'orderID': orderID,
             'status': orderStatus.APPROVED
         }
-        //publish order status to geust's app
+    //publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
     res.status(200).json('order approved');
     })
@@ -155,6 +155,7 @@ router.get('/sendAvocabot', (req, res) => {
             'orderID': orderID,
             'status': orderStatus.ONTHEWAY
         }
+    //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
     })
     res.status(200).json('order on the way');
