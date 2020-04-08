@@ -29,7 +29,7 @@ router.get('/getFoodsWithOutAuthen', (req,res)=>{
 });
 
 router.post('/addFoods',(req,res)=>{
-    const query = 'INSERT INTO food ("foodID", "foodName", "price", "foodImage") VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
+    const query = 'INSERT INTO food ("foodID", "foodName", "price", "foodImage","foodDescription") VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
     pool.query(query, (error, results) => {
         if (error) {
           throw error
