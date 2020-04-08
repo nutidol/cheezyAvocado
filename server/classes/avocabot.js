@@ -154,6 +154,7 @@ class Avocabot {
         console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
         return;
       }
+
       this.callReturnRobot = false;
       //MQTT: turn light off
       client.publish('closeLocker');
