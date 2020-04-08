@@ -56,7 +56,6 @@ router.get('/getFoodOrders', (req, res) => {
 });
 
 
-
 // approveOrder route
 router.get('/acceptOrder', (req, res, next) => {
     //receive orderid as orderNumber -> frontend also need to send info about orderID!?
@@ -69,7 +68,7 @@ router.get('/acceptOrder', (req, res, next) => {
             throw error
         }
         console.log(results);
-        console.log('status updated!');
+        console.log('status updated to approved!');
         let message = {
             'orderID': orderID,
             'status': orderStatus.APPROVED
@@ -138,8 +137,6 @@ router.get('/foodFinished', (req, res, next) => {
 });
 
 
-
-
 // sendOrder route
 router.get('/sendAvocabot', (req, res) => {
     //1. Close locker
@@ -152,7 +149,7 @@ router.get('/sendAvocabot', (req, res) => {
             console.log(error);
             throw error
         }
-        console.log('update status!');
+        console.log('status updated to on the way!');
         console.log(results)
         let message = {
             'orderID': orderID,
