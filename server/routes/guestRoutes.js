@@ -266,8 +266,8 @@ router.post('/placeOrder', (req,res)=>{
 
 });
 
-router.post('/cancelOrder', (req,res)=>{
-    const {orderID} = req.body;
+router.get('/cancelOrder', (req,res)=>{
+    const orderID = req.query.orderID;
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
         if(error){
