@@ -27,10 +27,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
-app.use('/guests', guestRoutes);
+app.use('/guest', guestRoutes);
 app.use('/authen', authentication.router)
 app.use('/menu', menu);
-app.use('/staffs', staffRoutes);
+app.use('/staff', staffRoutes);
 app.use('/queryEx', queryExample);
 app.use('/avocabot', avocabotRoutes);
 

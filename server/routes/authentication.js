@@ -118,16 +118,6 @@ router.post('/guest', (req,res) =>{ //return customerID
         }
     })
 
-    // console.log(req.body);
-    // const checkInDate = '2020-03-17';
-    // const checkOutDate = '2020-03-31';
-    // const validateGuest = true;
-    // if(validateGuest){
-    //     const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate}, accessTokenSecret)
-    //     res.json({accessToken});
-    // }else{
-    //     res.send('Incorrect data');
-    // }
 });
 
 const authenticatedStaff = (req,res,next) => {
