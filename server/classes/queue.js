@@ -16,6 +16,7 @@ class Queue {
     }
 
     addToQueue(order) {
+        console.log('Order added! : ' + order.orderID);
         let department = order.departmentName;
         let roomNumber = order.roomNumber;
         let destination1 = new Destination(department,this.purpose.PICKUP,order);
