@@ -6,6 +6,7 @@ const cors = require('cors')
 const router = express.Router();
 require('../global');
 const Order = require('../classes/order');
+const Avocabot = require('../classes/avocabot');
 
 router.use(morgan('dev'));
 const io = require('../config/server').io
@@ -128,19 +129,8 @@ router.get('/sendAvocabot', (req, res) => {
 });
 
 router.get('/openLocker', (req, res, next) => {
-    // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    // console.log(openLockerStatus);
-    // if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-        avocabot.openLocker() 
-    //     if(avocabot.lockerIsOpen==true) {
-    //     res.status(200).send('success');
-    //     } else {
-    //         res.status(200).send('not success')
-    //     }
-    //  } else {
-    //     res.status(200).send('not success')
-    // }
-        res.send('OK'); //Every HTTP Get has to have some response.
+    avocabot.openLocker() 
+    res.send('OK'); //Every HTTP Get has to have some response.
 });
 
 

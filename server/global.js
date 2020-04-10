@@ -58,6 +58,6 @@ orderStatus = {
   PENDING :'pending',
   APPROVED : 'approved',
   ONTHEWAY : 'on the way',
-  ARRIVED : 'arrived',
+  ARRIVED : 'complete',
   MISSED : 'missed'
 };
