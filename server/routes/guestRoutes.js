@@ -376,26 +376,56 @@ router.get('/getFoods', auth.authenticatedJWT, (req,res)=>{
         if (error) {
           throw error
         }
-        console.log(results);
+        // console.log(results);
         res.status(200).json(results.rows)
       })
 });
+
+router.get('/getFoodsByName', auth.authenticatedJWT, (req,res)=>{
+    const query = 'SELECT * FROM food ORDER BY "foodName" ASC'
+    pool.query(query, (error, results )=>{
+        if(error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+});
+
+router.get('/getFoodsByPrice', auth.authenticatedJWT, (req,res)=>{
+    const query = 'SELECT * FROM food ORDER BY "price" ASC'
+    pool.query(query, (error, results )=>{
+        if(error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+})
 
 router.get('/getAmenities', auth.authenticatedJWT, (req,res)=>{
     pool.query('SELECT * FROM amenity', (error, results) => {
         if (error) {
           throw error
         }
-        console.log(results);
+        // console.log(results);
         res.status(200).json(results.rows)
       })
 });
 
+router.get('/getAmenitiesByName', auth.authenticatedJWT, (req,res)=>{
+    const query = 'SELECT * FROM amenity ORDER BY "amenityName" ASC';
+    pool.query(query, (error,results) =>{
+        if(error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+})
 
 
 
 
-router.get('/testOrder',(req,res)=>{
+
+router.get('/testOrder', auth.authenticatedJWT, (req,res)=>{
     // updateKitchenOrder = true;
     client.publish('frontend/kitchenOrder','there is a new kitchen order');  
     client.publish('frontend/amenityOrder','there is a new amenity order');    
