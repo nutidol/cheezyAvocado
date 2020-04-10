@@ -121,7 +121,7 @@ class Avocabot {
       client.publish('exitHome');
     }   
     
-    openLocker(roomNumber) {
+    openLocker() {
       //Check whether avocabot is at the destination
       let currentNode = node[this.currentDestination.destination];
       let destinationNode = this.currentPosition;
