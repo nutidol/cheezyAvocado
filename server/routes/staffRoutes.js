@@ -39,7 +39,7 @@ router.get('/getAmenityOrders', (req, res) => {
         }
         // console.log(results.rows);
         // console.log(results.rowCount);
-        client.publish('frontend/staff/getAmenityOrders', results.rows); //publish to staff app
+        //client.publish('frontend/getAmenityOrders', results.rows); //publish to staff app
     res.status(200).json(results.rows);
     })
 });
@@ -55,7 +55,7 @@ router.get('/getFoodOrders', (req, res) => {
         }
         // console.log(results.rows);
         // console.log(results.rowCount);
-        client.publish('frontend/staff/getFoodOrders', results.rows);  //publish to staff app
+       // client.publish('frontend/getFoodOrders', results.rows);  //publish to staff app
     res.status(200).json(results.rows);
     })
 });
@@ -78,43 +78,7 @@ router.get('/acceptOrder', (req, res, next) => {
         console.log(results.row);
     res.status(200).json('order approved');
     })
-    //TODO: socket emit to frontend
 });
-
-
-// // readyOrder route
-// router.get('/foodFinished', (req, res, next) => {
-//     //Call avocabot
-//     let orderID = req.query.orderID;
-//     let departmentName;
-//     let roomNumber;
-//     const query1 = 'SELECT * FROM order WHERE \"orderID\"=\''+orderID+'\'';
-//     const departmentID = "";
-//     const roomNumber = "";
-//     pool.query(query1, (error, results) => {
-//         if (error) {
-//             throw error
-//           }
-//         console.log(results)
-//         departmentID = results.rows[0].departmentID;
-//         roomNumber = results.rows[0].roomNumber;
-//     })
-//     const departmentName = "";
-//     const query2 = 'SELECT * FROM department WHERE \"departmentID\"=\''+departmentId+'\'';
-//     pool.query(query2, (error, results) => {
-//         if (error) {
-//             throw error
-//           }
-//         console.log(results)
-//         departmentName = results.rows[0].departmentName;
-//     });
-//     //let departmentName = req.query.departmentName;
-//     //let roomNumber = req.query.roomNumber;
-//     order = new Order(orderID,departmentName,roomNumber);
-//     queue.addToQueue(order);
-//     res.send('OK');
-// });
-
 
 
 // readyOrder route
@@ -145,13 +109,13 @@ router.get('/foodFinished', (req, res, next) => {
 
 
 // sendOrder route
-router.get('/sendOrder', (req, res) => {
+router.get('/sendAvocabot', (req, res) => {
     //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
     //2. Socket emit to Guest
     //3. Database : Update status to 'on the way'
     const orderNumber = req.query.orderID;
-    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "orderID" = orderNumber';
+    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "orderID" = \''+orderNumber+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
@@ -159,7 +123,7 @@ router.get('/sendOrder', (req, res) => {
         }
         // res.status(200).json(results.row)
         console.log(results);
-    res.status(200).json('order on the way');
+    res.status(200).json('order on the way'); //send to staff app
     })
 });
 

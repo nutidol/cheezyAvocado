@@ -13,7 +13,7 @@ router.use(morgan('dev'));
 router.use(bodyParser.json());
 
 var orderID = 2;
-var updateKitchenOrder = false;
+//var updateKitchenOrder = false;
 
 
 // test route
@@ -22,21 +22,138 @@ router.get('/', (req, res) => {
 });
 
 // getBillPayment route
+//edit parameter to reservationID
+//return json results of order using reservatioID
 router.get('/getBillPayments', (req, res, next) => {
-    const guestId = req.query.guestID;
-    const query = 'SELECT * FROM "serviceBill" WHERE \"guestID\"=\''+guestId+'\'';
-   
-    pool.query(query, (error, results) => {
+    const reservationId = req.query.reservationID;
+    const query1 = 'SELECT * FROM "serviceBill" WHERE \"reservationID\"=\''+reservationId+'\'';
+    var invoicenumber = 0;
+    var totalResult = [];
+    const result = {};
+    var totalOrder = [];
+    var count = 0;
+    pool.query(query1, (error, results) => {
         if (error) {
             throw error
           }
-        console.log(results)
-        res.status(200).json(results.rows[0].totalAmount)
-    })
+        console.log(results);
+        invoicenumber=results.rows[0].invoiceNumber;
+        console.log(invoicenumber);
+    
+   //-----------------------------------------------------------
+        const query2 = 'SELECT * FROM "order" WHERE \"invoiceNumber\"=\''+invoicenumber+'\'';
+        const orderId = [];
+        pool.query(query2, (error, results1) => {
+            if (error) {
+                throw error
+            }
+            console.log(results1);
+            console.log(results1.rows.length);
+            for(i=0 ; i<results1.rows.length; i++){
+                console.log(results1.rows[i].orderID);
+                orderId.push(results1.rows[i].orderID);
+            } 
+            console.log(orderId);
+    //--------------------------------------------------------------------------
+            //loop in each orderID
+            for(i=0;i<orderId.length;i++) {
+                const orderId1=orderId[i];
+                console.log(orderId[i]);
+                console.log(i);
+                const list = {};
+                list.orderID = orderId1;
+                const foodId = [];
+                const amount = [];
+                const query3 = 'SELECT * FROM "orderFood" WHERE \"orderID\"=\''+orderId1+'\'';
+                pool.query(query3, (error, results) => {
+                    if (error) {
+                        throw error
+                    }
+                    console.log(results);
+                    for(j=0 ; j<results.rows.length; j++){
+                        foodId.push(results.rows[j].foodID);
+                        amount.push(results.rows[j].amount);
+                    } 
+                    console.log(foodId);
+    //--------------------------------------------------
+                    //loop in each foodID array
+                    var totalamount = 0;
+                    var b = 0;
+                    const sublist = {};
+                    count++;
+                    for(k=0;k<foodId.length; k++) {
+                        console.log(k)
+                        const foodId1 = foodId[k];
+                        console.log(foodId[k])
+                        const infor = {};
+                        const query4 = 'SELECT * FROM food WHERE \"foodID\"=\''+foodId1+'\'';
+                        pool.query(query4, (error, results) => {
+                            b++;
+                            if (error) {
+                                throw error
+                            }
+                            console.log(results)        
+                            infor.foodName = results.rows[0].foodName;
+                            infor.price = results.rows[0].price;
+                            infor.amount = amount[0];
+                            if(b==1) {
+                                sublist.order1=infor;
+                            }
+                            if(b==2) {
+                                sublist.order2=infor;
+                            }
+                            if(b==3) {
+                                sublist.order3=infor;
+                            }
+                            if(b==4) {
+                                sublist.order4=infor;
+                            }
+                            if(b==5) {
+                                sublist.order5=infor;
+                            }                                
+                            totalamount = totalamount+(infor.price*infor.amount);
+                            list.totalAmount = totalamount;
+                            console.log('here');
+                            console.log(list);
+                            totalOrder.push(list); 
+                            totalOrder = getUnique(totalOrder);
+                            console.log(totalOrder);
+                            result.totalOrder = totalOrder;
+                            console.log(result);
+                            totalResult = [];
+                            totalResult.push(result);
+                            console.log(count);
+                            console.log(b);
+                            console.log(results1.rows.length)
+                            list.orderList = sublist;  
+                            if(count == results1.rows.length && b == foodId.length) {
+                                res.send(totalResult);
+                            }
+                        });       
+                    }             
+                });  
+            }
+        });
+    result.reservationID=reservationId;
+    result.totalTotalAmount=results.rows[0].totalAmount;
+    });
 });
 
+//[{"reservationID":"00000002","totalTotalAmount":930,"totalOrder":[{"orderID":120,"totalAmount":510,"orderList":{"order1":{"foodName":"Prawn Pad Thai","price":170,"amount":3}}},{"orderID":130,"totalAmount":660,"orderList":{"order1":{"foodName":"Chicken Noodle","price":70,"amount":3},"order2":{"foodName":"Chicken Pad Thai","price":150,"amount":3}}}]}]
+
+function getUnique(array){
+    var uniqueArray = [];
+    
+    // Loop through array values
+    for(i=0; i < array.length; i++){
+        if(uniqueArray.indexOf(array[i]) === -1) {
+            uniqueArray.push(array[i]);
+        }
+    }
+    return uniqueArray;
+}
+
 //openRobotLocker
-//version 1,, use HTTP
 router.get('/openLocker', (req, res, next) => {
     // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
     // console.log(openLockerStatus);
@@ -74,13 +191,13 @@ io.on('connection', function (socket) {
     // });
     // //End ON Events
 
-    if(updateKitchenOrder){
-        io.emit('kitchenOrder','there has been an order');
-        updateKitchenOrder = false;
-    }
+    // if(updateKitchenOrder){
+    //     io.emit('kitchenOrder','there has been an order');
+    //     updateKitchenOrder = false;
+    // }
 
-    io.emit('amenityOrder','there has been an order');
-    //End ON Events
+    // io.emit('amenityOrder','there has been an order');
+    // //End ON Events
 });
 
 
@@ -116,14 +233,14 @@ router.post('/placeOrder', (req,res)=>{
         // USE mqtt instead of socket
         // io.on('connection', function (socket) {        
         //     io.emit('kitchenOrder','there has been an order');   
-        client.publish('frontend/guest/kitchenOrer', order); //publish to guest app
-        client.publish('frontend/staff/kitchenOrder','there is a new kitchen order'); //publish to staff app
+        //client.publish('frontend/guest/kitchenOrer', order); //publish to guest app
+        client.publish('frontend/staff/updateKitchenOrder','there is a new kitchen order'); //publish to staff app
         departmentID = 1;        
     }else if (department == 'amenity'){
         // USE mqtt instead of socket
         // io.emit('houseKeepingOrder', order)
-        client.publish('frontend/guest/amenityOrder', order); //publish to guest app
-        client.publish('frontend/staff/amenityOrder','there is a new amenity order'); //publish to staff app
+        //client.publish('frontend/guest/amenityOrder', order); //publish to guest app
+        client.publish('frontend/staff/updateAmenityOrder','there is a new amenity order'); //publish to staff app
         departmentID = 2; 
 
     }else{
@@ -319,12 +436,12 @@ router.post('/placeOrder', (req,res)=>{
 
 
 
-router.get('/testOrder',(req,res)=>{
-    // updateKitchenOrder = true;
-    client.publish('frontend/kitchenOrder','there is a new kitchen order');  
-    client.publish('frontend/amenityOrder','there is a new amenity order');    
-    res.send('okay');
-});
+// router.get('/testOrder',(req,res)=>{
+//     // updateKitchenOrder = true;
+//     client.publish('frontend/kitchenOrder','there is a new kitchen order');  
+//     client.publish('frontend/amenityOrder','there is a new amenity order');    
+//     res.send('okay');
+// });
 
 
 // router.get('/test', (req,res,) =>{

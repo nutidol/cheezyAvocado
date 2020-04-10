@@ -27,10 +27,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(compression())
 app.use(helmet())
-app.use('/guests', guestRoutes);
+app.use('/guest', guestRoutes);
 app.use('/authen', authentication.router)
 app.use('/menu', menu);
-app.use('/staffs', staffRoutes);
+app.use('/staff', staffRoutes);
 app.use('/queryEx', queryExample);
 app.use('/avocabot', avocabotRoutes);
 
@@ -72,31 +72,32 @@ app.get('/addGuest',(req,res)=>{
 
   console.log('insert parameter')
   
-  pool.query(sql1,  (error, results) => {
+  pool.query(sql1, (error, results) => {
       if (error) {
         console.log('error')
         throw error;
       }
         console.log('add to guest')
-    })
 
-    const query = 'SELECT * FROM guest WHERE \"guestID\"=\''+guestID+'\'';
-    //not sure if this will be error if there is no this guestID in db
-    const addedGuestID = "";
-    pool.query(query, (error, results) => {
-      if (error) {
-        console.log('error')
-        throw error;
-        }
-      console.log(results);
-      addedGuestID = results.rows[0].guestID;
-    })
+    // const query = 'SELECT * FROM guest WHERE \"guestID\"=\''+guestID+'\'';
+    // //not sure if this will be error if there is no this guestID in db
+    // //const addedGuestID = "";
+    // pool.query(query, (error, results) => {
+    //   if (error) {
+    //     console.log('error')
+    //     throw error;
+    //     }
+    //   console.log(results);
+    //   addedGuestID = results.rows[0].guestID;
+    //   console.log(addedGuestID);
+    // })
 
-    while(true) {
-      if(addedGuestID=guestID) {
-        break;
-      }
-    }
+    // while(true) {
+    //   //console.log('loop')
+    //   if(addedGuestID==guestID) {
+    //     break;
+    //   }
+    // }
     pool.query(sql2,  (error, results) => {
       if (error) {
         console.log('error')
@@ -106,6 +107,7 @@ app.get('/addGuest',(req,res)=>{
         res.status(200).send('added new guest');
         console.log('add to room')
     })
+  });
   });
 
 //------------------------------------------------Test Cloud MQTT------------------------------------------------
