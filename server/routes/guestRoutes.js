@@ -25,12 +25,13 @@ router.get('/', (req, res) => {
 // getBillPayment route
 //edit parameter to reservationID
 //return json results of order using reservatioID
+
 router.get('/getBillPayments', (req, res, next) => {
-    if(!req.query.param) {
+    if(!req.query) {
         res.send('parameter is missing');
     }
     const reservationId = req.query.reservationID;
-    const query1 = 'SELECT * FROM "serviceBill" WHERE \"reservationID\"=\''+reservationId+'\'';
+    const query1 = 'SELECT "invoiceNumber","totalAmount" FROM "serviceBill" WHERE \"reservationID\"=\''+reservationId+'\'';
     var invoicenumber = 0;
     var totalResult = [];
     const result = {};
@@ -40,108 +41,201 @@ router.get('/getBillPayments', (req, res, next) => {
         if (error) {
             throw error
           }
-        console.log(results);
+        // console.log(results);
+        const totalAmount = results.rows[0].totalAmount;
         invoicenumber=results.rows[0].invoiceNumber;
-        console.log(invoicenumber);
-    
-   //-----------------------------------------------------------
-        const query2 = 'SELECT * FROM "order" WHERE \"invoiceNumber\"=\''+invoicenumber+'\'';
+        console.log('the invoice number is ' + invoicenumber);
+   //---------------------- -------------------------------------
+        const query2 = 'SELECT "orderID","timestamp" FROM "order" WHERE "invoiceNumber"=\''+invoicenumber+'\'';
         const orderId = [];
+        var orders = [];
         pool.query(query2, (error, results1) => {
             if (error) {
                 throw error
             }
-            console.log(results1);
-            console.log(results1.rows.length);
-            for(i=0 ; i<results1.rows.length; i++){
-                console.log(results1.rows[i].orderID);
-                orderId.push(results1.rows[i].orderID);
-            } 
-            console.log(orderId);
-    //--------------------------------------------------------------------------
-            //loop in each orderID
-            for(i=0;i<orderId.length;i++) {
-                const orderId1=orderId[i];
-                console.log(orderId[i]);
-                console.log(i);
-                const list = {};
-                list.orderID = orderId1;
-                const foodId = [];
-                const amount = [];
-                const query3 = 'SELECT * FROM "orderFood" WHERE \"orderID\"=\''+orderId1+'\'';
+            console.log(results1.rows[0]);
+            const currentTS = results1.rows[0].timestamp;
+            var date_ob = new Date(currentTS);
+            var year = date_ob.getFullYear();
+            var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            var date = ("0" + date_ob.getDate()).slice(-2);
+            var hours = ("0" + date_ob.getHours()).slice(-2);
+            var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+            var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+            const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+
+            var totalBillAmount = 0;
+            // console.log(results1);
+            // console.log(results1.rows.length);
+            const numberOfRows = results1.rows.length;
+            for(let i=0 ; i<results1.rows.length; i++){
+                // console.log(results1.rows[i].orderID);
+                // orderId.push(results1.rows[i].orderID);
+                const currentOrderID = results1.rows[i].orderID;
+                console.log('this is the currentOrderID '+ currentOrderID);
+                var subOrders = [];
+                var totalOrderCost = 0;
+                const query3 = 'SELECT "foodName",amount,price FROM "orderFood", "food" WHERE "orderFood"."foodID" = "food"."foodID" and "orderID"=\''+currentOrderID+'\'';
                 pool.query(query3, (error, results) => {
                     if (error) {
                         throw error
                     }
-                    console.log(results);
+                    // console.log(results);
                     for(j=0 ; j<results.rows.length; j++){
-                        foodId.push(results.rows[j].foodID);
-                        amount.push(results.rows[j].amount);
+                        // foodId.push(results.rows[j].foodID);
+                        // amount.push(results.rows[j].amount);
+                        console.log(results.rows[j]);
+                        const subOrder = {
+                            foodName: results.rows[j].foodName,
+                            amount: results.rows[j].amount
+                        }
+                        subOrders = [...subOrders, subOrder];
+                        totalOrderCost = results.rows[j].price * results.rows[j].amount;
+                        console.log('the total price is '+ totalOrderCost);
+                        console.log('order looks like this '+ subOrders);
+                        if(j == results.rows.length-1){
+                            const order = {
+                                orderID : currentOrderID,
+                                totalCost : totalOrderCost,
+                                orders : subOrders,
+                                timestamp: timestamp,
+                            };
+                            console.log('this is what an order look like');
+                            console.log(order);
+                            orders = [...orders, order];
+                            console.log('this is what orders look like ' + orders);
+                            totalBillAmount = totalOrderCost + totalBillAmount;
+                            if(i == numberOfRows-1){
+                                const serviceBill = {
+                                    reservationID: reservationId,
+                                    invoiceNumber: invoicenumber,
+                                    totalAmount: totalAmount,
+                                    orders: orders
+                                }
+                                res.status(200).json(serviceBill);
+                            }
+                        }
                     } 
-                    console.log(foodId);
+
+                })
+
+            // console.log(orderId);
+    //--------------------------------------------------------------------------
+            //loop in each orderID
+            // for(i=0;i<orderId.length;i++) {
+            //     const currentOrderId=orderId[i];
+            //     console.log(orderId[i]);
+            //     console.log(i);
+            //     const list = {};
+            //     // list.orderID = orderId1;
+            //     const foodId = [];
+            //     const amount = [];
+                // var subOrders = [];
+                // var totalOrderCost = 0;
+                // const query3 = 'SELECT "foodName",amount,price FROM "orderFood", "food" WHERE "orderFood"."foodID" = "food"."foodID" and "orderID"=\''+currentOrderId+'\'';
+                // pool.query(query3, (error, results) => {
+                //     if (error) {
+                //         throw error
+                //     }
+                //     // console.log(results);
+                //     for(j=0 ; j<results.rows.length; j++){
+                //         foodId.push(results.rows[j].foodID);
+                //         amount.push(results.rows[j].amount);
+                //         console.log(results.rows[j]);
+                //         const order = {
+                //             foodName: results.rows[j].foodID,
+                //             amount: results.rows[j].amount
+                //         }
+                //         subOrders = [...subOrders, order];
+                //         totalOrderCost = results.rows[j].price * results.rows[j].amount;
+                //         console.log('the total price is '+ totalOrderCost);
+                //         console.log('order looks like this '+ subOrders);
+
+                //     } 
+                    // console.log(foodId);
     //--------------------------------------------------
                     //loop in each foodID array
-                    var totalamount = 0;
-                    var b = 0;
-                    const sublist = {};
-                    count++;
-                    for(k=0;k<foodId.length; k++) {
-                        console.log(k)
-                        const foodId1 = foodId[k];
-                        console.log(foodId[k])
-                        const infor = {};
-                        const query4 = 'SELECT * FROM food WHERE \"foodID\"=\''+foodId1+'\'';
-                        pool.query(query4, (error, results) => {
-                            b++;
-                            if (error) {
-                                throw error
-                            }
-                            console.log(results)        
-                            infor.foodName = results.rows[0].foodName;
-                            infor.price = results.rows[0].price;
-                            infor.amount = amount[0];
-                            if(b==1) {
-                                sublist.order1=infor;
-                            }
-                            if(b==2) {
-                                sublist.order2=infor;
-                            }
-                            if(b==3) {
-                                sublist.order3=infor;
-                            }
-                            if(b==4) {
-                                sublist.order4=infor;
-                            }
-                            if(b==5) {
-                                sublist.order5=infor;
-                            }                                
-                            totalamount = totalamount+(infor.price*infor.amount);
-                            list.totalAmount = totalamount;
-                            console.log('here');
-                            console.log(list);
-                            totalOrder.push(list); 
-                            totalOrder = getUnique(totalOrder);
-                            console.log(totalOrder);
-                            result.totalOrder = totalOrder;
-                            console.log(result);
-                            totalResult = [];
-                            totalResult.push(result);
-                            console.log(count);
-                            console.log(b);
-                            console.log(results1.rows.length)
-                            list.orderList = sublist;  
-                            if(count == results1.rows.length && b == foodId.length) {
-                                res.send(totalResult);
-                            }
-                        });       
-                    }             
-                });  
+                //     var totalamount = 0;
+                //     var b = 0;
+                //     const sublist = {};
+                //     count++;
+                //     for(k=0;k<foodId.length; k++) {
+                //         console.log(k)
+                //         const foodId1 = foodId[k];
+                //         console.log(foodId[k])
+                //         const infor = {};
+                //         const query4 = 'SELECT * FROM food WHERE \"foodID\"=\''+foodId1+'\'';
+                //         pool.query(query4, (error, results) => {
+                //             b++;
+                //             if (error) {
+                //                 throw error
+                //             }
+                //             console.log(results)        
+                //             infor.foodName = results.rows[0].foodName;
+                //             infor.price = results.rows[0].price;
+                //             infor.amount = amount[0];
+                //             if(b==1) {
+                //                 sublist.order1=infor;
+                //             }
+                //             if(b==2) {
+                //                 sublist.order2=infor;
+                //             }
+                //             if(b==3) {
+                //                 sublist.order3=infor;
+                //             }
+                //             if(b==4) {
+                //                 sublist.order4=infor;
+                //             }
+                //             if(b==5) {
+                //                 sublist.order5=infor;
+                //             }                                
+                //             totalamount = totalamount+(infor.price*infor.amount);
+                //             list.totalAmount = totalamount;
+                //             console.log('here');
+                //             console.log(list);
+                //             totalOrder.push(list); 
+                //             totalOrder = getUnique(totalOrder);
+                //             console.log(totalOrder);
+                //             result.totalOrder = totalOrder;
+                //             console.log(result);
+                //             totalResult = [];
+                //             totalResult.push(result);
+                //             console.log(count);
+                //             console.log(b);
+                //             console.log(results1.rows.length)
+                //             list.orderList = sublist;  
+                //             if(count == results1.rows.length && b == foodId.length) {
+                //                 res.send(totalResult);
+                //             }
+                //         });       
+                //     }             
+                // });  
+
             }
+
+            // const serviceBill = {
+            //     reservationID: reservationId,
+            //     invoiceNumber: invoicenumber,
+            //     orders: orders, 
+            // }
+            // res.status(200).json(serviceBill);
+
         });
-    result.reservationID=reservationId;
-    result.totalTotalAmount=results.rows[0].totalAmount;
+    // result.reservationID=reservationId;
+    // result.totalTotalAmount=results.rows[0].totalAmount;
     });
 });
+
+
+
+
+
+
+
+
+
+
+
 
 //[{"reservationID":"00000002","totalTotalAmount":930,"totalOrder":[{"orderID":120,"totalAmount":510,"orderList":{"order1":{"foodName":"Prawn Pad Thai","price":170,"amount":3}}},{"orderID":130,"totalAmount":660,"orderList":{"order1":{"foodName":"Chicken Noodle","price":70,"amount":3},"order2":{"foodName":"Chicken Pad Thai","price":150,"amount":3}}}]}]
 
