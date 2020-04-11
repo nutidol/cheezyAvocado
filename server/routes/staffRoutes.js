@@ -76,6 +76,14 @@ router.get('/acceptOrder', (req, res, next) => {
             throw error
         }
         // res.status(200).json(results.row)
+        console.log('status updated to approved!');
+        //console.log(results)
+        let message = {
+            'orderID': orderID,
+            'status': orderStatus.APPROVED
+        }
+    //3. Publish order status to geust's app
+        client.publish('orderStatus',JSON.stringify(message));
         console.log(results.row);
     res.status(200).json('order approved');
     })
