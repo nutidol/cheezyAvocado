@@ -54,18 +54,50 @@ router.get('/getFoodOrders', (req, res) => {
             console.log(error);
             throw error
         }
+        // console.log(results);
+        // console.log(results);
         // console.log(results.rows);
-        // console.log(results.rowCount);
+        // // console.log(results.fields[1].name);
+        // for(var j=0; j<results.row)
+        for (var i=0; i<results.rowCount; i++){
+            // var orderID = results.rows[i].orderID;
+            // var tempOrderID = orderID;
+            // if(orderID=nextOrderID){
+            //     console.log(results.rows[i].foodName);
+            //     console.log(resultsrows[i].amount);
+            //     console.log(results.rows[i].timestamp);
+            // }
+
+            const ts = results.rows[i].timestamp;
+            var date_ob = new Date(ts);
+            var year = date_ob.getFullYear();
+            var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            var date = ("0" + date_ob.getDate()).slice(-2);
+            var hours = ("0" + date_ob.getHours()).slice(-2);
+            var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+            var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+            const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+            let order = {
+                    roomNumber: results.rows[i].roomNumber,
+                    foodName: results.rows[i].foodName,
+                    amount: results.rows[i].amount,
+                    timestamp: timestamp
+                };
+            console.log(order);
+        }
        // client.publish('frontend/getFoodOrders', results.rows);  //publish to staff app
-    res.status(200).json(results.rows);
+    // res.status(200).json(results.rows);
     })
 });
 
 
 
 // approveOrder route
-router.get('/acceptOrder', (req, res, next) => {
-    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+router.get('/acceptOrder', (req, res) => {
+    //error if no id
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const orderNumber = req.query.orderID;
     //set the order’s status to “approved”
     const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
