@@ -177,6 +177,5 @@ router.get('/openLocker', (req, res, next) => {
         res.send('OK'); //Every HTTP Get has to have some response.
 });
 
-
 module.exports = router;
 
