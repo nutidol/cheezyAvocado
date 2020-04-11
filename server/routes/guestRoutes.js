@@ -26,6 +26,9 @@ router.get('/', (req, res) => {
 //edit parameter to reservationID
 //return json results of order using reservatioID
 router.get('/getBillPayments', (req, res, next) => {
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const reservationId = req.query.reservationID;
     const query1 = 'SELECT * FROM "serviceBill" WHERE \"reservationID\"=\''+reservationId+'\'';
     var invoicenumber = 0;
@@ -201,6 +204,9 @@ io.on('connection', function (socket) {
 
 
 router.post('/placeOrder', (req,res)=>{
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const {department, order, reservationID, roomNumber,totalCost} = req.body;
     console.log(order)
     const ts = Date.now();
@@ -362,6 +368,9 @@ router.post('/placeOrder', (req,res)=>{
 });
 
 router.get('/cancelOrder', (req,res)=>{
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const orderID = req.query.orderID;
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
@@ -457,6 +466,9 @@ router.get('/cancelOrder', (req,res)=>{
 });
 
 router.get('/getCurrentOrder', (req,res)=>{
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const roomNumber = req.query.roomNumber;
     const query = 'select "orderID","status" from "order" where (status = \'pending\' or status =\'approved\' or status =\'on the way\') and "roomNumber"=\''+roomNumber+'\'';
     console.log(query);
