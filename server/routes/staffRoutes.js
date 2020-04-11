@@ -104,24 +104,26 @@ router.get('/foodFinished', (req, res, next) => {
 });
 
 
-
-
-
-
-
-// sendOrder route
+// ID = 17
 router.get('/sendAvocabot', (req, res) => {
     //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
-    //2. Socket emit to Guest
-    //3. Database : Update status to 'on the way'
-    const orderNumber = req.query.orderID;
-    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "orderID" = \''+orderNumber+'\'';
+    //2. Database : Update status to 'on the way' 
+    const orderID = req.query.orderID;
+    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "order"."orderID" = \''+orderID+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
+        console.log('status updated to on the way!');
+        //console.log(results)
+        let message = {
+            'orderID': orderID,
+            'status': orderStatus.ONTHEWAY
+        }
+    //3. Publish order status to geust's app
+        client.publish('orderStatus',JSON.stringify(message));
         // res.status(200).json(results.row)
         console.log(results);
     res.status(200).json('order on the way'); //send to staff app
