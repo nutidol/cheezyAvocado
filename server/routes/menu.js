@@ -1,13 +1,13 @@
 const express = require('express');
 const { pool } = require('../config/config')
-const authen = require('./authentication');
+const auth = require('./authentication');
 const router = express.Router();
 
 router.get('/',(req,res)=>{
     res.send('in route menu')
 })
 
-router.get('/getFoods', authen.authenticatedJWT, (req,res)=>{
+router.get('/getFoods', auth.authenticatedJWT, (req,res)=>{
     pool.query('SELECT * FROM food', (error, results) => {
         if (error) {
           throw error
@@ -29,7 +29,7 @@ router.get('/getFoodsWithOutAuthen', (req,res)=>{
 });
 
 router.post('/addFoods',(req,res)=>{
-    const query = 'INSERT INTO food ("foodID", "foodName", "price", "foodImage") VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
+    const query = 'INSERT INTO food ("foodID", "foodName", "price", "foodImage","foodDescription") VALUES (\'1\',\'Prawn Pad Thai\',\'150\',\'url1\')'
     pool.query(query, (error, results) => {
         if (error) {
           throw error
@@ -38,7 +38,7 @@ router.post('/addFoods',(req,res)=>{
     })
 });
 
-router.get('/getAmenities', authen.authenticatedJWT, (req,res)=>{
+router.get('/getAmenities', auth.authenticatedJWT, (req,res)=>{
     pool.query('SELECT * FROM amenity', (error, results) => {
         if (error) {
           throw error

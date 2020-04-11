@@ -16,15 +16,15 @@ class Queue {
     }
 
     addToQueue(order) {
+        console.log('Order added! : ' + order.orderID);
         let department = order.departmentName;
         let roomNumber = order.roomNumber;
         let destination1 = new Destination(department,this.purpose.PICKUP,order);
         let destination2 = new Destination(roomNumber,this.purpose.DELIVER,order);
-        if(this.queue.length != 0) {
-            this.queue.push(destination1);
-            this.queue.push(destination2);
-        } else {
-            this.queue.push(destination2);
+        let goNow = (this.queue.length == 0) ? true : false;
+        this.queue.push(destination1);
+        this.queue.push(destination2);
+        if(goNow) {
             avocabot.goTo(destination1);
         }
     }
@@ -33,6 +33,7 @@ class Queue {
         this.queue.shift();
         let destination = (this.queue.length == 0 ) ? new Destination('116',this.purpose.GOHOME,null) : this.queue[0];
         avocabot.goTo(destination);
+        avocabot.callReturnRobot=false;
     }
 
 }
