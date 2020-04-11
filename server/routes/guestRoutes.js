@@ -370,6 +370,7 @@ router.get('/cancelOrder', (req,res)=>{
         }
         console.log(result);
         if(result.rowCount!=0){
+            client.publish('frontend/updateAmenityOrder','there is a deletion of amenity order');
             const deleteAmenity = 'delete from "orderAmenity" where "orderID"=\''+orderID+'\'';
             pool.query(deleteAmenity, (error,result2)=>{
                 if(error){
@@ -386,6 +387,7 @@ router.get('/cancelOrder', (req,res)=>{
                 })
             })
         }else{
+            client.publish('frontend/updateKitchenOrder','there is a deletion of kitchen order');
             const getFoodOrder = 'select price,amount from "orderFood",food where "orderFood"."foodID"=food."foodID" and "orderID"=\''+orderID+'\'';
             pool.query(getFoodOrder, (error,res1)=>{
                 console.log(res1);
