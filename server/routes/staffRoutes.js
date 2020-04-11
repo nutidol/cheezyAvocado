@@ -137,11 +137,11 @@ router.get('/foodFinished', (req, res, next) => {
 });
 
 
-// sendOrder route
+// ID = 17
 router.get('/sendAvocabot', (req, res) => {
     //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
-    //2. Database : Update status to 'on the way'
+    //2. Database : Update status to 'on the way' 
     const orderID = req.query.orderID;
     const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "order"."orderID" = \''+orderID+'\'';
     pool.query(query, (error, results) => {
@@ -150,7 +150,7 @@ router.get('/sendAvocabot', (req, res) => {
             throw error
         }
         console.log('status updated to on the way!');
-        console.log(results)
+        //console.log(results)
         let message = {
             'orderID': orderID,
             'status': orderStatus.ONTHEWAY
