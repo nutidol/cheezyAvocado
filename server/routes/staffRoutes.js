@@ -68,8 +68,7 @@ router.get('/acceptOrder', (req, res, next) => {
     //receive orderid as orderNumber -> frontend also need to send info about orderID!?
     const orderNumber = req.query.orderID;
     //set the order’s status to “approved”
-    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
-    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
+    const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
