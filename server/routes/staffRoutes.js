@@ -6,6 +6,7 @@ const cors = require('cors')
 const router = express.Router();
 require('../global');
 const Order = require('../classes/order');
+const Avocabot = require('../classes/avocabot');
 
 router.use(morgan('dev'));
 const io = require('../config/server').io
@@ -24,20 +25,22 @@ io.on('connection', function (socket) {
         //     //query order from that department 
         //     console.log(department);
         // });
+    
         // //End ON Events
 });
 
 router.get('/getAmenityOrders', (req, res) => {
     //database querying
     //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and "order"."status"=\'pending\' or "order"."status"=\'approved\'';
+    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID"';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
         // console.log(results.rows);
-        console.log(results.rowCount);
+        // console.log(results.rowCount);
+        //client.publish('frontend/getAmenityOrders', results.rows); //publish to staff app
     res.status(200).json(results.rows);
     })
 });
@@ -45,74 +48,38 @@ router.get('/getAmenityOrders', (req, res) => {
 router.get('/getFoodOrders', (req, res) => {
     //database querying
     //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","food"."foodName","orderFood"."amount","order"."timestamp" FROM "order","orderFood","food" WHERE "order"."orderID"="orderFood"."orderID" and "orderFood"."foodID"="food"."foodID" and "order"."status"=\'pending\' or "order"."status"=\'approved\'';
+    const query = 'SELECT "order"."roomNumber","order"."orderID","food"."foodName","orderFood"."amount","order"."timestamp" FROM "order","orderFood","food" WHERE "order"."orderID"="orderFood"."orderID" and "orderFood"."foodID"="food"."foodID"';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
+        // console.log(results.rows);
+        // console.log(results.rowCount);
+       // client.publish('frontend/getFoodOrders', results.rows);  //publish to staff app
     res.status(200).json(results.rows);
     })
 });
 
 
+
 // approveOrder route
 router.get('/acceptOrder', (req, res, next) => {
-    //receive orderid 
-    const orderID = req.query.orderID;
+    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+    const orderNumber = req.query.orderID;
     //set the order’s status to “approved”
-    const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderID+'\'';
+    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
+    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
-        console.log(results);
-        console.log('status updated to approved!');
-        let message = {
-            'orderID': orderID,
-            'status': orderStatus.APPROVED
-        }
-    //publish order status to geust's app
-        client.publish('orderStatus',JSON.stringify(message));
+        // res.status(200).json(results.row)
+        console.log(results.row);
     res.status(200).json('order approved');
     })
 });
-
-
-// // readyOrder route
-// router.get('/foodFinished', (req, res, next) => {
-//     //Call avocabot
-//     let orderID = req.query.orderID;
-//     let departmentName;
-//     let roomNumber;
-//     const query1 = 'SELECT * FROM order WHERE \"orderID\"=\''+orderID+'\'';
-//     const departmentID = "";
-//     const roomNumber = "";
-//     pool.query(query1, (error, results) => {
-//         if (error) {
-//             throw error
-//           }
-//         console.log(results)
-//         departmentID = results.rows[0].departmentID;
-//         roomNumber = results.rows[0].roomNumber;
-//     })
-//     const departmentName = "";
-//     const query2 = 'SELECT * FROM department WHERE \"departmentID\"=\''+departmentId+'\'';
-//     pool.query(query2, (error, results) => {
-//         if (error) {
-//             throw error
-//           }
-//         console.log(results)
-//         departmentName = results.rows[0].departmentName;
-//     });
-//     //let departmentName = req.query.departmentName;
-//     //let roomNumber = req.query.roomNumber;
-//     order = new Order(orderID,departmentName,roomNumber);
-//     queue.addToQueue(order);
-//     res.send('OK');
-// });
-
 
 
 // readyOrder route
@@ -137,45 +104,35 @@ router.get('/foodFinished', (req, res, next) => {
 });
 
 
+
+
+
+
+
 // sendOrder route
 router.get('/sendAvocabot', (req, res) => {
     //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
-    //2. Database : Update status to 'on the way'
-    const orderID = req.query.orderID;
-    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "order"."orderID" = \''+orderID+'\'';
+    //2. Socket emit to Guest
+    //3. Database : Update status to 'on the way'
+    const orderNumber = req.query.orderID;
+    const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "orderID" = \''+orderNumber+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
-        console.log('status updated to on the way!');
-        console.log(results)
-        let message = {
-            'orderID': orderID,
-            'status': orderStatus.ONTHEWAY
-        }
-    //3. Publish order status to geust's app
-        client.publish('orderStatus',JSON.stringify(message));
+        // res.status(200).json(results.row)
+        console.log(results);
+    res.status(200).json('order on the way'); //send to staff app
     })
-    res.status(200).json('order on the way');
 });
 
 router.get('/openLocker', (req, res, next) => {
-    // const openLockerStatus = req.query.openLockerStatus; //receive from frontend
-    // console.log(openLockerStatus);
-    // if(openLockerStatus==1) { //robot set 0 for locked locker and 1 for opened locker in arduino
-        avocabot.openLocker() 
-    //     if(avocabot.lockerIsOpen==true) {
-    //     res.status(200).send('success');
-    //     } else {
-    //         res.status(200).send('not success')
-    //     }
-    //  } else {
-    //     res.status(200).send('not success')
-    // }
-        res.send('OK'); //Every HTTP Get has to have some response.
+    avocabot.openLocker() 
+    res.send('OK'); //Every HTTP Get has to have some response.
 });
 
 module.exports = router;
 
+// database enum orderStatus: on the way, approved, pending, complete, error
