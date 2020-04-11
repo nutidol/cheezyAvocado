@@ -54,61 +54,57 @@ app.use('/static', express.static('node_modules'));
 // }, guestRoutes);
 
 
-app.get('/addGuest',(req,res)=>{
-  const guestID= req.query.guestID
+app.get('/addGuest',(req,res)=> {
+  const reservationID = req.query.reservationID;
+  const guestID = req.query.guestID
   const guestFirstName =req.query.guestFirstName
   const guestLastName =req.query.guestLastName
   const guestNameTitle= req.query.guestNameTitle
-  //const guestEmailAddress = req.query.guestEmailAddress
-  //const password=req.query.password 
-  const roomNumber=req.query.roomNumber
-  const roomTypeName=req.query.roomTypeName
-  const checkInDate=req.query.checkInDate
-  const checkOutDate=req.query.checkOutDate
+  const numberOfGuests = req.query.numberOfGuests
+  const roomNumber = req.query.roomNumber
+  const roomTypeName = req.query.roomTypeName
+  const checkInDate = req.query.checkInDate
+  const checkOutDate = req.query.checkOutDate
   console.log('receive parameter')
+  //http://localhost:3000/addGuest?guestID=18464857&guestFirstName=Pimrasa&guestLastName=Chaiwatnarathorn&roomNumber=260&roomTypeName=Standard Double&checkInDate=2020-03-20&checkOutDate=2020-03-25&reservationID=18276030&guestNameTitle=Miss&numberOfGuests=2
+
 
   var sql1 = 'INSERT INTO guest ("guestID", "guestFirstName", "guestLastName", "guestNameTitle", "guestEmailAddress", "password") VALUES (\''+guestID+'\',\''+guestFirstName+'\',\''+guestLastName+'\',\''+guestNameTitle+'\',\''+null+'\',\''+null+'\')' 
-  var sql2 = 'INSERT INTO room ("roomNumber", "roomTypeName", "guestID", "checkInDate", "checkOutDate") VALUES (\''+roomNumber+'\',\''+roomTypeName+'\',\''+guestID+'\',\''+checkInDate+'\',\''+checkOutDate+'\')'
+  var sql2 = 'INSERT INTO reservation ("reservationID", "numberOfGuests", "checkInDate", "checkOutDate") VALUES (\''+reservationID+'\',\''+numberOfGuests+'\',\''+checkInDate+'\',\''+checkOutDate+'\')'
+  var sql3 = 'INSERT INTO room ("roomNumber", "roomTypeName") VALUES (\''+roomNumber+'\',\''+roomTypeName+'\')'
 
   console.log('insert parameter')
   
-  pool.query(sql1, (error, results) => {
+  pool.query(sql1, (error, results1) => {
       if (error) {
         console.log('error')
         throw error;
       }
-        console.log('add to guest')
-
-    // const query = 'SELECT * FROM guest WHERE \"guestID\"=\''+guestID+'\'';
-    // //not sure if this will be error if there is no this guestID in db
-    // //const addedGuestID = "";
-    // pool.query(query, (error, results) => {
-    //   if (error) {
-    //     console.log('error')
-    //     throw error;
-    //     }
-    //   console.log(results);
-    //   addedGuestID = results.rows[0].guestID;
-    //   console.log(addedGuestID);
-    // })
-
-    // while(true) {
-    //   //console.log('loop')
-    //   if(addedGuestID==guestID) {
-    //     break;
-    //   }
-    // }
-    pool.query(sql2,  (error, results) => {
-      if (error) {
-        console.log('error')
-        throw error;
+        if(results1) {
+          console.log('add to guest')
+        pool.query(sql2,  (error, results2) => {
+          if (error) {
+          console.log('error')
+          throw error;
+          }
+          if(results2) {
+            console.log('add to reservation')
+          pool.query(sql3,  (error, results3) => {
+            if (error) {
+              console.log('error')
+              throw error;
+            }
+            if(results3) {
+              console.log('add to room')
+              res.status(200).send('added new guest');
+            }
+          });
         }
-      //res.status(200).json(results.rows)
-        res.status(200).send('added new guest');
-        console.log('add to room')
-    })
+      });
+    }
   });
-  });
+});
+
 
 //------------------------------------------------Test Cloud MQTT------------------------------------------------
 // Worked!!
@@ -140,8 +136,8 @@ client.on('message', (topic, message) => {
 })
 
 //------------------------------------------------Test delivery system------------------------------------------------
-order = new Order('1111','Kitchen','101');
-queue.addToQueue(order);
+// order = new Order('1111','Kitchen','101');
+// queue.addToQueue(order);
 //------------------------------------------------Test mqtt async------------------------------------------------
 
 // let client = mqtt.connect('mqtt://broker.mqttdashboard.com');
