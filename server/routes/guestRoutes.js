@@ -298,9 +298,7 @@ io.on('connection', function (socket) {
 
 
 router.post('/placeOrder', (req,res)=>{
-    if(!req.query.param) {
-        res.send('parameter is missing');
-    }
+
     const {department, order, reservationID, roomNumber,totalCost} = req.body;
     console.log(order)
     const ts = Date.now();
@@ -462,9 +460,6 @@ router.post('/placeOrder', (req,res)=>{
 });
 
 router.get('/cancelOrder', (req,res)=>{
-    if(!req.query.param) {
-        res.send('parameter is missing');
-    }
     const orderID = req.query.orderID;
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
