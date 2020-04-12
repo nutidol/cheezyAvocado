@@ -29,27 +29,30 @@ io.on('connection', function (socket) {
         // //End ON Events
 });
 
-router.get('/getAmenityOrders', (req, res) => {
-    //database querying
-    //return orders for that department
-    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
+
+router.get('/getFoodOrders', (req, res) => {
+    let query = 'select "order"."orderID","order"."roomNumber","food"."foodName","orderFood"."amount","order"."timestamp","order"."status"' +
+                'from "order","orderFood","food"' + 
+                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')'
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
-        let value = []; 
-        const rows = results.rowCount;
-        for(let i=0; i<results.rowCount; i++){
-            // console.log(results.rows[i]);
-            // const currentOrderID = results.rows[i].orderID
-            // const currentRoomNumber = results.rows[i].roomNumber
-            const query1 = 'SELECT "amenityName","amount" FROM "orderAmenity","amenity" WHERE "orderAmenity"."orderID" = \''+ results.rows[i].orderID +'\' and "orderAmenity"."amenityID"="amenity"."amenityID"'
-            // console.log(query1); 
-            pool.query(query1, (error, results2)=>{
-                const currentOrderID = results.rows[i].orderID
-                const currentRoomNumber = results.rows[i].roomNumber
-                const currentTS = results.rows[i].timestamp
+        let orders = results.rows;
+        let currentOrderID;
+        let list = [];
+        let foodList = [];
+        for(let i=0;i<orders.length;i++) {
+            let currentObject = orders[i];
+            let nextObject = orders[i+1];
+            foodList.push({
+                'foodName': currentObject.foodName,
+                'amount': currentObject.amount
+            });
+            currentOrderID = currentObject.orderID;
+            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+                const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
                 var year = date_ob.getFullYear();
                 var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
@@ -58,76 +61,66 @@ router.get('/getAmenityOrders', (req, res) => {
                 var minutes = ("0" + date_ob.getMinutes()).slice(-2);
                 var seconds = ("0" + date_ob.getSeconds()).slice(-2);
                 const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-                if(error){
-                    throw error
-                }
-                const orderInfo = {
-                    orderID : currentOrderID,
-                    roomNumber : currentRoomNumber,
-                    timestamp: timestamp,
-                    orders : results2.rows
-                };
-                value = [...value, orderInfo];
-                if(i== results.rowCount-1){
-                    console.log(value);
-                    res.status(200).json(value);
-                }
-        });
-    }
-})
-})
 
-router.get('/getFoodOrders', (req, res) => {
-    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
-    pool.query(query, (error, results)=>{
-        if(error){
+                list.push({
+                    'orderID': currentOrderID,
+                    'roomNumber': currentObject.roomNumber,
+                    'timestamp': timestamp,
+                    'orders': foodList
+                });
+                foodList = [];
+                currentOrderID = nextObject.orderID;
+            }
+        }
+        res.status(200).json(list);
+    });
+});
+
+
+router.get('/getAmenityOrders', (req, res) => {
+    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
             throw error
         }
-        let value = []; 
-        const rows = results.rowCount;
-        for(let i=0; i<results.rowCount; i++){
-            // console.log(results.rows[i]);
-            // const currentOrderID = results.rows[i].orderID
-            // const currentRoomNumber = results.rows[i].roomNumber
-            const query1 = 'SELECT "foodName","amount" FROM "orderFood","food" WHERE "orderFood"."orderID" = \''+ results.rows[i].orderID +'\' and "orderFood"."foodID"="food"."foodID"'
-            // console.log(query1); 
-            pool.query(query1, (error, results2)=>{
-                    const currentOrderID = results.rows[i].orderID
-                    const currentRoomNumber = results.rows[i].roomNumber
-                    const currentTS = results.rows[i].timestamp
-                    var date_ob = new Date(currentTS);
-                    var year = date_ob.getFullYear();
-                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-                    var date = ("0" + date_ob.getDate()).slice(-2);
-                    var hours = ("0" + date_ob.getHours()).slice(-2);
-                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
-                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
-                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-                    if(error){
-                        throw error
-                    }
-                    // console.log(results2);
-                    const orderInfo = {
-                        orderID : currentOrderID,
-                        roomNumber : currentRoomNumber,
-                        timestamp: timestamp,
-                        orders : results2.rows
-                    };
-                    value = [...value, orderInfo];
-                    if(i== results.rowCount-1){
-                        console.log(value);
-                        res.status(200).json(value);
-                    }
-                    // console.log(orderInfo);
+        let orders = results.rows;
+        let currentOrderID;
+        let list = [];
+        let amenityList = [];
+        for(let i=0;i<orders.length;i++) {
+            let currentObject = orders[i];
+            let nextObject = orders[i+1];
+            amenityList.push({
+                'amenityName': currentObject.amenityName,
+                'amount': currentObject.amount
             });
-            // console.log('this is ' + a);
-            // function addToValueJa(a,valueJa){
-            //     valueJa = a() + valueJa;
-            // };
-            // addToValueJa(a,valueJa);
+            currentOrderID = currentObject.orderID;
+            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+                const currentTS = currentObject.timestamp
+                var date_ob = new Date(currentTS);
+                var year = date_ob.getFullYear();
+                var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                var date = ("0" + date_ob.getDate()).slice(-2);
+                var hours = ("0" + date_ob.getHours()).slice(-2);
+                var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+
+                list.push({
+                    'orderID': currentOrderID,
+                    'roomNumber': currentObject.roomNumber,
+                    'timestamp': timestamp,
+                    'orders': amenityList
+                });
+                amenityList = [];
+                currentOrderID = nextObject.orderID;
+            }
         }
-    })
-})
+        res.status(200).json(list);
+    });
+});
+
 
 
 
@@ -224,56 +217,54 @@ module.exports = router;
 // database enum orderStatus: on the way, approved, pending, complete, error
 
 
-router.get('/getAmenityOrders2', (req, res) => {
-    //database querying
-    //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and "order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\'';
-    pool.query(query, (error, results) => {
-        if (error) {
-            console.log(error);
+router.get('/getFoodOrdersOld', (req, res) => {
+    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
+    pool.query(query, (error, results)=>{
+        if(error){
             throw error
         }
-        console.log(results.rows);
-        // for(let i=0; i<results.rowCount; i++){
-        //     const orderID = results.rows[i].orderID;
-        // }
-
-    })
-});
-
-
-router.get('/getFoodOrders2', (req, res) => {
-    let query = 'select "order"."orderID","order"."roomNumber","food"."foodName","orderFood"."amount","order"."timestamp","order"."status"' +
-                'from "order","orderFood","food"' + 
-                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')'
-    pool.query(query, (error, results) => {
-        if (error) {
-            console.log(error);
-            throw error
-        }
-        let orders = results.rows;
-        let currentOrderID;
-        let list = [];
-        let foodList = [];
-        for(let i=0;i<orders.length;i++) {
-            let currentObject = orders[i];
-            let nextObject = orders[i+1];
-            foodList.push({
-                'foodName': currentObject.foodName,
-                'amount': currentObject.amount
+        let value = []; 
+        const rows = results.rowCount;
+        for(let i=0; i<results.rowCount; i++){
+            // console.log(results.rows[i]);
+            // const currentOrderID = results.rows[i].orderID
+            // const currentRoomNumber = results.rows[i].roomNumber
+            const query1 = 'SELECT "foodName","amount" FROM "orderFood","food" WHERE "orderFood"."orderID" = \''+ results.rows[i].orderID +'\' and "orderFood"."foodID"="food"."foodID"'
+            // console.log(query1); 
+            pool.query(query1, (error, results2)=>{
+                    const currentOrderID = results.rows[i].orderID
+                    const currentRoomNumber = results.rows[i].roomNumber
+                    const currentTS = results.rows[i].timestamp
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+                    if(error){
+                        throw error
+                    }
+                    // console.log(results2);
+                    const orderInfo = {
+                        orderID : currentOrderID,
+                        roomNumber : currentRoomNumber,
+                        timestamp: timestamp,
+                        orders : results2.rows
+                    };
+                    value = [...value, orderInfo];
+                    if(i== results.rowCount-1){
+                        console.log(value);
+                        res.status(200).json(value);
+                    }
+                    // console.log(orderInfo);
             });
-            currentOrderID = currentObject.orderID;
-            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
-                list.push({
-                    'orderID': currentOrderID,
-                    'roomNumber': currentObject.roomNumber,
-                    'timestamp': currentObject.timestamp,
-                    'orders': foodList
-                });
-                foodList = [];
-                currentOrderID = nextObject.orderID;
-            }
+            // console.log('this is ' + a);
+            // function addToValueJa(a,valueJa){
+            //     valueJa = a() + valueJa;
+            // };
+            // addToValueJa(a,valueJa);
         }
-        res.send(JSON.stringify(list));
-    });
-});
+    })
+})
