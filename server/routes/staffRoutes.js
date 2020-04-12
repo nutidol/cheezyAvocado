@@ -32,50 +32,128 @@ io.on('connection', function (socket) {
 router.get('/getAmenityOrders', (req, res) => {
     //database querying
     //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID"';
+    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
-        // console.log(results.rows);
-        // console.log(results.rowCount);
-        //client.publish('frontend/getAmenityOrders', results.rows); //publish to staff app
-    res.status(200).json(results.rows);
-    })
-});
+        let value = []; 
+        const rows = results.rowCount;
+        for(let i=0; i<results.rowCount; i++){
+            // console.log(results.rows[i]);
+            // const currentOrderID = results.rows[i].orderID
+            // const currentRoomNumber = results.rows[i].roomNumber
+            const query1 = 'SELECT "amenityName","amount" FROM "orderAmenity","amenity" WHERE "orderAmenity"."orderID" = \''+ results.rows[i].orderID +'\' and "orderAmenity"."amenityID"="amenity"."amenityID"'
+            // console.log(query1); 
+            pool.query(query1, (error, results2)=>{
+                const currentOrderID = results.rows[i].orderID
+                const currentRoomNumber = results.rows[i].roomNumber
+                const currentTS = results.rows[i].timestamp
+                var date_ob = new Date(currentTS);
+                var year = date_ob.getFullYear();
+                var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                var date = ("0" + date_ob.getDate()).slice(-2);
+                var hours = ("0" + date_ob.getHours()).slice(-2);
+                var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+                if(error){
+                    throw error
+                }
+                const orderInfo = {
+                    orderID : currentOrderID,
+                    roomNumber : currentRoomNumber,
+                    timestamp: timestamp,
+                    orders : results2.rows
+                };
+                value = [...value, orderInfo];
+                if(i== results.rowCount-1){
+                    console.log(value);
+                    res.status(200).json(value);
+                }
+        });
+    }
+})
+})
 
 router.get('/getFoodOrders', (req, res) => {
-    //database querying
-    //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","food"."foodName","orderFood"."amount","order"."timestamp" FROM "order","orderFood","food" WHERE "order"."orderID"="orderFood"."orderID" and "orderFood"."foodID"="food"."foodID"';
-    pool.query(query, (error, results) => {
-        if (error) {
-            console.log(error);
+    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
+    pool.query(query, (error, results)=>{
+        if(error){
             throw error
         }
-        // console.log(results.rows);
-        // console.log(results.rowCount);
-       // client.publish('frontend/getFoodOrders', results.rows);  //publish to staff app
-    res.status(200).json(results.rows);
+        let value = []; 
+        const rows = results.rowCount;
+        for(let i=0; i<results.rowCount; i++){
+            // console.log(results.rows[i]);
+            // const currentOrderID = results.rows[i].orderID
+            // const currentRoomNumber = results.rows[i].roomNumber
+            const query1 = 'SELECT "foodName","amount" FROM "orderFood","food" WHERE "orderFood"."orderID" = \''+ results.rows[i].orderID +'\' and "orderFood"."foodID"="food"."foodID"'
+            // console.log(query1); 
+            pool.query(query1, (error, results2)=>{
+                    const currentOrderID = results.rows[i].orderID
+                    const currentRoomNumber = results.rows[i].roomNumber
+                    const currentTS = results.rows[i].timestamp
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+                    if(error){
+                        throw error
+                    }
+                    // console.log(results2);
+                    const orderInfo = {
+                        orderID : currentOrderID,
+                        roomNumber : currentRoomNumber,
+                        timestamp: timestamp,
+                        orders : results2.rows
+                    };
+                    value = [...value, orderInfo];
+                    if(i== results.rowCount-1){
+                        console.log(value);
+                        res.status(200).json(value);
+                    }
+                    // console.log(orderInfo);
+            });
+            // console.log('this is ' + a);
+            // function addToValueJa(a,valueJa){
+            //     valueJa = a() + valueJa;
+            // };
+            // addToValueJa(a,valueJa);
+        }
     })
-});
+})
 
 
 
 // approveOrder route
-router.get('/acceptOrder', (req, res, next) => {
-    //receive orderid as orderNumber -> frontend also need to send info about orderID!?
+router.get('/acceptOrder', (req, res) => {
+    //error if no id
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     const orderNumber = req.query.orderID;
     //set the order’s status to “approved”
-    const query = 'UPDATE "order" SET "status" = \'Approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
-    // const query = 'UPDATE "order" SET "status" = \'Order Approved\' WHERE "orderID" = \'2\' ';
+    const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
         // res.status(200).json(results.row)
+        console.log('status updated to approved!');
+        //console.log(results)
+        let message = {
+            'orderID': orderID,
+            'status': orderStatus.APPROVED
+        }
+    //3. Publish order status to geust's app
+        client.publish('orderStatus',JSON.stringify(message));
         console.log(results.row);
     res.status(200).json('order approved');
     })
@@ -84,6 +162,9 @@ router.get('/acceptOrder', (req, res, next) => {
 
 // readyOrder route
 router.get('/foodFinished', (req, res, next) => {
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     //Call avocabot
     let orderID = req.query.orderID;
     let departmentName;
@@ -106,6 +187,9 @@ router.get('/foodFinished', (req, res, next) => {
 
 // ID = 17
 router.get('/sendAvocabot', (req, res) => {
+    if(!req.query.param) {
+        res.send('parameter is missing');
+    }
     //1. Close locker
     avocabot.sendAvocabot(); //Warning: Improper called can cause bug in the navigation system
     //2. Database : Update status to 'on the way' 
@@ -134,7 +218,6 @@ router.get('/openLocker', (req, res, next) => {
     avocabot.openLocker() 
     res.send('OK'); //Every HTTP Get has to have some response.
 });
-
 
 module.exports = router;
 
