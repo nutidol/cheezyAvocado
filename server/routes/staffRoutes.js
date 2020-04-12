@@ -162,7 +162,6 @@ router.get('/foodFinished', (req, res, next) => {
     const query = 'select "department"."departmentName", "order"."roomNumber" from "order" , "department" WHERE "order"."orderID" = \''+orderID+'\' and "department"."departmentID" = "order"."departmentID"'
     pool.query(query, (error, results) => {
         if (error) {
-            console.log(error);
             throw error
         }
         departmentName = results.rows[0].departmentName;
