@@ -60,3 +60,6 @@ orderStatus = {
   ARRIVED : 'complete',
   MISSED : 'missed'
 };
+
+testingMode = true;
+prefix = testingMode ? "test/" : "" ;

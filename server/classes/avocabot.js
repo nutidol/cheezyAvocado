@@ -50,7 +50,7 @@ class Avocabot {
         //MQTT: Ring bell
         let destination = this.currentDestination.destination;
         let message = destination + 'ON';
-        client.publish('controlBell',message);
+        client.publish(prefix+'controlBell',message);
         //Set timeout for 60 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
@@ -93,32 +93,32 @@ class Avocabot {
 
     turnLeft() {
       console.log('turn left');
-      client.publish('turnLeft');
+      client.publish(prefix+'turnLeft');
     }
 
     turnRight() {
       console.log('turn right');
-      client.publish('turnRight');
+      client.publish(prefix+'turnRight');
     }
 
     forward(distance) {
       console.log('forward ' + distance);
-      client.publish('forward',distance);
+      client.publish(prefix+'forward',distance);
     }
 
     backward(distance) {
       console.log('backward' + distance);
-      client.publish('backward',distance);
+      client.publish(prefix+'backward',distance);
     }
 
     enterHome() {
       console.log('Enter home');
-      client.publish('enterHome');
+      client.publish(prefix+'enterHome');
     }
 
     exitHome() {
       console.log('Exit home');
-      client.publish('exitHome');
+      client.publish(prefix+'exitHome');
     }   
     
     openLocker() {
@@ -130,7 +130,7 @@ class Avocabot {
         return;
       }
       //MQTT: Tell avocabot to open locker (turn on the light)
-      client.publish('openLocker');
+      client.publish(prefix+'openLocker');
       //MQTT: receive response from Avocabot when LED is on
       client.subscribe('lockerIsOpen');
       client.on('message', (topic, message) => {
@@ -157,7 +157,7 @@ class Avocabot {
 
       this.callReturnRobot = false;
       //MQTT: turn light off
-      client.publish('closeLocker');
+      client.publish(prefix+'closeLocker');
       //TODO: MQTT receive response from robot when LED is off
       client.subscribe('lockerIsClosed')
       client.on('message', (topic, message) => {
