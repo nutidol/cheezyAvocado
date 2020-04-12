@@ -154,7 +154,7 @@ router.get('/acceptOrder', (req, res) => {
         }
     //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
-        console.log(results.row);
+        console.log(results.row); //FIXME: ไม่บัคหรอ?
     res.status(200).json('order approved');
     })
 });
@@ -224,7 +224,7 @@ module.exports = router;
 // database enum orderStatus: on the way, approved, pending, complete, error
 
 
-router.get('/getAmenityOrdersOld', (req, res) => {
+router.get('/getAmenityOrders2', (req, res) => {
     //database querying
     //return orders for that department
     const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and "order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\'';
@@ -242,19 +242,38 @@ router.get('/getAmenityOrdersOld', (req, res) => {
 });
 
 
-router.get('/getFoodOrdersOld', (req, res) => {
-    //database querying
-    //return orders for that department
-    const query = 'SELECT "order"."roomNumber","order"."orderID","food"."foodName","orderFood"."amount","order"."timestamp" FROM "order","orderFood","food" WHERE "order"."orderID"="orderFood"."orderID" and "orderFood"."foodID"="food"."foodID" and "order"."status"= \'pending\' or "order"."status"= \'approved\' or "order"."status" = \'on the way\'';
+router.get('/getFoodOrders2', (req, res) => {
+    let query = 'select "order"."orderID","order"."roomNumber","food"."foodName","orderFood"."amount","order"."timestamp","order"."status"' +
+                'from "order","orderFood","food"' + 
+                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')'
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
             throw error
         }
-        console.log(results.rows);
-        // for(let i=0; i<results.rowCount; i++){
-        //     const orderID = results.rows[i].orderID;
-        // }
-
-    })
+        let orders = results.rows;
+        let currentOrderID;
+        let list = [];
+        let foodList = [];
+        for(let i=0;i<orders.length;i++) {
+            let currentObject = orders[i];
+            let nextObject = orders[i+1];
+            foodList.push({
+                'foodName': currentObject.foodName,
+                'amount': currentObject.amount
+            });
+            currentOrderID = currentObject.orderID;
+            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+                list.push({
+                    'orderID': currentOrderID,
+                    'roomNumber': currentObject.roomNumber,
+                    'timestamp': currentObject.timestamp,
+                    'orders': foodList
+                });
+                foodList = [];
+                currentOrderID = nextObject.orderID;
+            }
+        }
+        res.send(JSON.stringify(list));
+    });
 });
