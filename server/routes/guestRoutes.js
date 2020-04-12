@@ -87,7 +87,8 @@ router.get('/getBillPayments', (req, res, next) => {
                         console.log(results.rows[j]);
                         const subOrder = {
                             foodName: results.rows[j].foodName,
-                            amount: results.rows[j].amount
+                            amount: results.rows[j].amount,
+                            price: results.rows[j].price
                         }
                         subOrders = [...subOrders, subOrder];
                         totalOrderCost = results.rows[j].price * results.rows[j].amount;
