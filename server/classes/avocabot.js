@@ -51,7 +51,7 @@ class Avocabot {
         let destination = this.currentDestination.destination;
         let message = destination + 'ON';
         client.publish('controlBell',message);
-        //Set timeout for 30 seconds -> Go back to department
+        //Set timeout for 60 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
             let destination = new Destination(
@@ -61,7 +61,7 @@ class Avocabot {
             //Update status
             //this.currentDestination.order.updateStatus(Order.status.MISSED);
             this.goTo(destination);
-          },30000);
+          },180000);
         }
 
       }else if(this.instructionPointer < this.instructions.length){
@@ -143,7 +143,7 @@ class Avocabot {
         clearInterval(this.currentTimeout);
         this.currentTimeout = setTimeout(()=>{
           this.controller.retrieveFromQueue();
-        },10000);
+        },30000);
       }
     }
 
