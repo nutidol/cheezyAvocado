@@ -125,7 +125,7 @@ router.get('/getAmenityOrders', (req, res) => {
 // approveOrder route
 router.get('/acceptOrder', (req, res) => {
     //error if no id
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     const orderID = req.query.orderID;
@@ -145,14 +145,14 @@ router.get('/acceptOrder', (req, res) => {
         }
     //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
-        res.status(200).json('order approved');
     })
+    res.status(200).json('order approved');
 });
 
 
 // readyOrder route
 router.get('/foodFinished', (req, res, next) => {
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     //Call avocabot
@@ -176,7 +176,7 @@ router.get('/foodFinished', (req, res, next) => {
 
 // ID = 17
 router.get('/sendAvocabot', (req, res) => {
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     //1. Close locker
