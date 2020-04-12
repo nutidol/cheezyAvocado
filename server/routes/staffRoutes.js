@@ -36,6 +36,7 @@ router.get('/getFoodOrders', (req, res) => {
                 'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')'
     pool.query(query, (error, results) => {
         if (error) {
+            res.send('error'); 
             console.log(error);
             throw error
         }
@@ -81,6 +82,7 @@ router.get('/getAmenityOrders', (req, res) => {
     const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')';
     pool.query(query, (error, results) => {
         if (error) {
+            res.send('error'); 
             console.log(error);
             throw error
         }
@@ -125,7 +127,7 @@ router.get('/getAmenityOrders', (req, res) => {
 // approveOrder route
 router.get('/acceptOrder', (req, res) => {
     //error if no id
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     const orderID = req.query.orderID;
@@ -133,6 +135,7 @@ router.get('/acceptOrder', (req, res) => {
     const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderID+'\'';
     pool.query(query, (error, results) => {
         if (error) {
+            res.send('error'); 
             console.log(error);
             throw error
         }
@@ -145,14 +148,14 @@ router.get('/acceptOrder', (req, res) => {
         }
     //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
-        res.status(200).json('order approved');
     })
+    res.status(200).json('order approved');
 });
 
 
 // readyOrder route
 router.get('/foodFinished', (req, res, next) => {
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     //Call avocabot
@@ -170,12 +173,13 @@ router.get('/foodFinished', (req, res, next) => {
         let order = new Order(orderID,departmentName,roomNumber);
         queue.addToQueue(order);
     })
+    res.status(200).json('OK');
 });
 
 
 // ID = 17
 router.get('/sendAvocabot', (req, res) => {
-    if(!req.query.param) {
+    if(!req.query.orderID) {
         res.send('parameter is missing');
     }
     //1. Close locker
@@ -185,6 +189,7 @@ router.get('/sendAvocabot', (req, res) => {
     const query = 'UPDATE "order" SET "status" = \'on the way\' WHERE "order"."orderID" = \''+orderID+'\'';
     pool.query(query, (error, results) => {
         if (error) {
+            res.send('error'); 
             console.log(error);
             throw error
         }
