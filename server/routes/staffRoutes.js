@@ -222,3 +222,21 @@ router.get('/openLocker', (req, res, next) => {
 module.exports = router;
 
 // database enum orderStatus: on the way, approved, pending, complete, error
+
+
+router.get('/getAmenityOrder', (req, res) => {
+    //database querying
+    //return orders for that department
+    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and "order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\'';
+    pool.query(query, (error, results) => {
+        if (error) {
+            console.log(error);
+            throw error
+        }
+        console.log(results.rows);
+        // for(let i=0; i<results.rowCount; i++){
+        //     const orderID = results.rows[i].orderID;
+        // }
+
+    })
+});
