@@ -122,17 +122,15 @@ router.get('/getAmenityOrders', (req, res) => {
 });
 
 
-
-
 // approveOrder route
 router.get('/acceptOrder', (req, res) => {
     //error if no id
     if(!req.query.param) {
         res.send('parameter is missing');
     }
-    const orderNumber = req.query.orderID;
+    const orderID = req.query.orderID;
     //set the order’s status to “approved”
-    const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderNumber+'\'';
+    const query = 'UPDATE "order" SET "status" = \'approved\' WHERE \"orderID\" = \''+orderID+'\'';
     pool.query(query, (error, results) => {
         if (error) {
             console.log(error);
@@ -147,8 +145,7 @@ router.get('/acceptOrder', (req, res) => {
         }
     //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
-        console.log(results.row); //FIXME: ไม่บัคหรอ?
-    res.status(200).json('order approved');
+        res.status(200).json('order approved');
     })
 });
 
@@ -174,7 +171,6 @@ router.get('/foodFinished', (req, res, next) => {
         let order = new Order(orderID,departmentName,roomNumber);
         queue.addToQueue(order);
     })
-    res.send('OK');
 });
 
 
