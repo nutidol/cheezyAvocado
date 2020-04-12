@@ -87,10 +87,11 @@ router.get('/getBillPayments', (req, res, next) => {
                         console.log(results.rows[j]);
                         const subOrder = {
                             foodName: results.rows[j].foodName,
-                            amount: results.rows[j].amount
+                            amount: results.rows[j].amount,
+                            price: results.rows[j].price
                         }
                         subOrders = [...subOrders, subOrder];
-                        totalOrderCost = results.rows[j].price * results.rows[j].amount;
+                        totalOrderCost = results.rows[j].price * results.rows[j].amount+ totalOrderCost;
                         console.log('the total price is '+ totalOrderCost);
                         console.log('order looks like this '+ subOrders);
                         if(j == results.rows.length-1){
@@ -298,9 +299,7 @@ io.on('connection', function (socket) {
 
 
 router.post('/placeOrder', (req,res)=>{
-    if(!req.query.param) {
-        res.send('parameter is missing');
-    }
+
     const {department, order, reservationID, roomNumber,totalCost} = req.body;
     console.log(order)
     const ts = Date.now();
@@ -462,9 +461,6 @@ router.post('/placeOrder', (req,res)=>{
 });
 
 router.get('/cancelOrder', (req,res)=>{
-    if(!req.query.param) {
-        res.send('parameter is missing');
-    }
     const orderID = req.query.orderID;
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
