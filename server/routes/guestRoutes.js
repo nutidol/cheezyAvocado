@@ -494,6 +494,12 @@ router.get('/cancelOrder', (req,res)=>{
             client.publish('frontend/updateKitchenOrder','there is a deletion of kitchen order');
             const getFoodOrder = 'select price,amount from "orderFood",food where "orderFood"."foodID"=food."foodID" and "orderID"=\''+orderID+'\'';
             pool.query(getFoodOrder, (error,res1)=>{
+                if(error){
+                    throw error
+                }
+                if(res1.rowCount==0){
+                    res.send('invalid orderID');
+                }
                 console.log(res1);
                 var totalPrice=0;
                 console.log(res1.rowCount)
