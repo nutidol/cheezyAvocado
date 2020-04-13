@@ -456,6 +456,8 @@ router.post('/placeOrder', (req,res)=>{
                 })
             }    
         });
+    } else{
+        res.send('Incorrect Department');
     }
 
 });
