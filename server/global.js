@@ -36,8 +36,6 @@ avocabot = new Avocabot('K',hotelMap);
 queue = new Queue(avocabot);
 avocabot.controller = queue;
 
-//TODO: Move credentials to .env
-
 const mqtt = require('mqtt');
 const options = {
     port: 17267,
@@ -62,3 +60,6 @@ orderStatus = {
   ARRIVED : 'complete',
   MISSED : 'missed'
 };
+
+testingMode = true;
+prefix = testingMode ? "test/" : "" ;

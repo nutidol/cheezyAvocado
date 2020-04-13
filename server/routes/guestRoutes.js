@@ -463,6 +463,9 @@ router.post('/placeOrder', (req,res)=>{
 });
 
 router.get('/cancelOrder', (req,res)=>{
+    if(!req.query.orderID) {
+        res.send('parameter is missing');
+    }
     const orderID = req.query.orderID;
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
@@ -558,7 +561,7 @@ router.get('/cancelOrder', (req,res)=>{
 });
 
 router.get('/getCurrentOrder', (req,res)=>{
-    if(!req.query.param) {
+    if(!req.query.roomNumber) {
         res.send('parameter is missing');
     }
     const roomNumber = req.query.roomNumber;
