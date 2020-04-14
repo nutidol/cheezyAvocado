@@ -77,40 +77,47 @@ router.get('/', (req, res) => {
 
 router.post('/guest', (req,res) =>{ //return customerID 
     const {roomNumber, lastName, password} = req.body;
-    const query = 'SELECT * FROM guest,room WHERE \"roomNumber\"=\''+roomNumber+'\'';
+    const query = 'SELECT * FROM "staysIn","guest" WHERE "guestLastName"=\''+lastName+'\' and \"password\"=\''+password+'\' and guest.\"guestID\"=\"staysIn\".\"guestID\" and \"roomNumber\"=\''+roomNumber+'\'';
 
     pool.query(query, (error, results) => {
         if (error) {
           throw error
         }
-        console.log(results.rows[0]);
+        // console.log(results);
         if(results.rows[0]){
-            const {guestLastName, checkInDate, checkOutDate, guestFirstName} = results.rows[0];
+            const {guestLastName, guestFirstName, guestID} = results.rows[0];
             const guestPassword = results.rows[0].password;
-            const guestroomNumber = results.rows[0].roomNumber;
-            console.log(guestLastName,checkInDate);
-            if(guestLastName == lastName && guestPassword== password){
-                console.log('you\'re in ');
-                const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName}, accessTokenSecret)
-                res.json({accessToken,roomNumber,guestFirstName,guestLastName});
-            }else{
-                res.send('Incorrect data');
-            }
+            console.log('and the guest id is '+ guestID);
+            const ts = Date.now();
+            var date_ob = new Date(ts);
+            var year = date_ob.getFullYear();
+            var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            var date = ("0" + date_ob.getDate()).slice(-2);
+            const currentDate = year + "-" + month + "-" + date;
+            const findReservationQuery = 'select reserves."reservationID", "checkInDate", "checkOutDate" from guest,reserves,reservation where guest."guestID"=reserves."guestID" and reservation."reservationID"=reserves."reservationID" and guest."guestID" = \'' +guestID + 
+            '\' and "checkInDate" <=\'' + currentDate+ '\' and "checkOutDate">=\''+ currentDate + '\'';
+            pool.query(findReservationQuery, (error, results2)=> {
+                if(error){
+                    throw error
+                }
+                console.log(results2);
+                const {reservationID, checkInDate, checkOutDate} = results2.rows[0]
+
+                if(guestLastName == lastName && guestPassword== password){
+                    console.log('you\'re in ');
+                    const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName, guestID: guestID, reservationID: reservationID}, accessTokenSecret)
+                    res.json({accessToken,roomNumber,guestFirstName,guestLastName, guestID, reservationID});
+                }else{
+                    res.send('Incorrect data');
+                }
+
+            });
+        
         }else{
             res.send('Incorrect data');
         }
     })
 
-    // console.log(req.body);
-    // const checkInDate = '2020-03-17';
-    // const checkOutDate = '2020-03-31';
-    // const validateGuest = true;
-    // if(validateGuest){
-    //     const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate}, accessTokenSecret)
-    //     res.json({accessToken});
-    // }else{
-    //     res.send('Incorrect data');
-    // }
 });
 
 const authenticatedStaff = (req,res,next) => {

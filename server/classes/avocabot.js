@@ -1,6 +1,8 @@
 const Destination = require('./destination');
+const Order = require('./order');
 const Graph = require('./graph/graph');
-require('./../global');
+require('../global');
+
 
 class Avocabot {
 
@@ -11,6 +13,8 @@ class Avocabot {
     currentTimeout;
     controller;
     hotelMap;
+    lockerIsOpen;
+    callReturnRobot;
 
     constructor(currentPosition, hotelMap) { //currentPosition as a character notation.
       this.currentPosition = currentPosition;
@@ -27,36 +31,40 @@ class Avocabot {
 
     execute() {
       this.instructionPointer++;
-      if(this.instructionPointer >= this.instructions.length) { //Avocabot has arrived.
+      if(this.instructionPointer > this.instructions.length) {
+        console.warn('Pointer is out of range');
+      }
+      if(this.instructionPointer == this.instructions.length) { //Avocabot has arrived.
+        console.log('The avocabot has arrived!');
         //Update current position
         if(this.instructionPointer != 0) {
           let previousInstruction = this.instructions[this.instructionPointer-1];
           this.currentPosition = previousInstruction.newPosition;
         }
-        //Set order status
-        let status;
+        //Update order status
         let purpose = this.currentDestination.purpose;
-        switch(purpose) {
-          case this.controller.purpose.PICKUP : status = 'on the way'
-          case this.controller.purpose.DELIVER : status = 'arrived'
-          case this.controller.purpose.RETURN : status = 'missed'
+        let currentOrder = this.currentDestination.order;
+        if(purpose == this.controller.purpose.DELIVER) {
+          currentOrder.updateStatus(orderStatus.ARRIVED);
         }
-        if(status) {
-          this.currentDestination.order.updateStatus(status);
-        }
-        //TODO: Ring bell
-        //Set timeout for 30 seconds -> Go back to department
+        //MQTT: Ring bell
+        let destination = this.currentDestination.destination;
+        let message = destination + 'ON';
+        client.publish(prefix+'controlBell',message);
+        //Set timeout for 60 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
             let destination = new Destination(
               this.currentDestination.order.departmentName,
               this.controller.purpose.RETURN,
               this.currentDestination.order);
+            //Update status
+            //this.currentDestination.order.updateStatus(Order.status.MISSED);
             this.goTo(destination);
-          },30000);
+          },180000);
         }
 
-      }else{
+      }else if(this.instructionPointer < this.instructions.length){
         let mapping = {
           'L' : this.turnLeft,
           'R' : this.turnRight,
@@ -85,37 +93,82 @@ class Avocabot {
 
     turnLeft() {
       console.log('turn left');
+      client.publish(prefix+'turnLeft');
     }
 
     turnRight() {
       console.log('turn right');
+      client.publish(prefix+'turnRight');
     }
 
     forward(distance) {
       console.log('forward ' + distance);
+      client.publish(prefix+'forward',distance);
     }
 
     backward(distance) {
       console.log('backward' + distance);
+      client.publish(prefix+'backward',distance);
     }
 
     enterHome() {
       console.log('Enter home');
+      client.publish(prefix+'enterHome');
     }
 
     exitHome() {
       console.log('Exit home');
-    }
-
+      client.publish(prefix+'exitHome');
+    }   
+    
     openLocker() {
-      clearInterval(this.currentTimeout);
-      this.currentTimeout = setTimeout(()=>{
-        this.controller.retrieveFromQueue();
-      },10000);
+      //Check whether avocabot is at the destination
+      let currentNode = node[this.currentDestination.destination];
+      let destinationNode = this.currentPosition;
+      if(currentNode != destinationNode) {
+        console.warn('Someone is trying to open the locker while the avocabot is not at the destination!');
+        return;
+      }
+      //MQTT: Tell avocabot to open locker (turn on the light)
+      client.publish(prefix+'openLocker');
+      //MQTT: receive response from Avocabot when LED is on
+      client.subscribe('lockerIsOpen');
+      client.on('message', (topic, message) => {
+        if(topic == 'lockerIsOpen') {
+            console.log(topic);
+            this.lockerIsOpen = true;
+          }
+      })
+      if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
+        clearInterval(this.currentTimeout);
+        this.currentTimeout = setTimeout(()=>{
+          this.controller.retrieveFromQueue();
+        },30000);
+      }
     }
 
-    closeLocker() {
-      retrieveFromQueue();
+    sendAvocabot() {
+      let currentNode = node[this.currentDestination.destination];
+      let destinationNode = this.currentPosition;
+      if(currentNode != destinationNode) {
+        console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
+        return;
+      }
+
+      this.callReturnRobot = false;
+      //MQTT: turn light off
+      client.publish(prefix+'closeLocker');
+      //TODO: MQTT receive response from robot when LED is off
+      client.subscribe('lockerIsClosed')
+      client.on('message', (topic, message) => {
+        if(topic == 'lockerIsClosed') {
+          console.log(topic);
+          this.lockerIsOpen = false;
+          this.callReturnRobot = true;
+          clearInterval(this.currentTimeout);
+          this.controller.retrieveFromQueue();
+        }
+      })
     }
     
 }

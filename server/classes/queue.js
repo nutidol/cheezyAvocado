@@ -16,6 +16,7 @@ class Queue {
     }
 
     addToQueue(order) {
+        console.log('Order added! : ' + order.orderID);
         let department = order.departmentName;
         let roomNumber = order.roomNumber;
         let destination1 = new Destination(department,this.purpose.PICKUP,order);
@@ -32,6 +33,7 @@ class Queue {
         this.queue.shift();
         let destination = (this.queue.length == 0 ) ? new Destination('116',this.purpose.GOHOME,null) : this.queue[0];
         avocabot.goTo(destination);
+        avocabot.callReturnRobot=false;
     }
 
 }
