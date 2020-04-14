@@ -15,7 +15,7 @@ const io = require('../config/server').io
 
 // test route
 router.get('/', (req, res) => {
-    res.send('this is from server file!');
+    res.send('this is from staff file!');
 });
 
 io.on('connection', function (socket) {
@@ -138,8 +138,12 @@ router.get('/sendAvocabot', (req, res) => {
 });
 
 router.get('/openLocker', (req, res, next) => {
+    try {
     avocabot.openLocker() 
     res.send('OK'); //Every HTTP Get has to have some response.
+    } catch (err) {
+        res.status(400).send("error");
+    }
 });
 
 module.exports = router;
