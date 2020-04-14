@@ -2,10 +2,10 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Socket.io</title>
+        <title>Cheezy Avocado Backend API</title>
     </head>
     <body>
-        <h1>Express and socket.io</h1>
+        <h1>Cheezy Avocado Backend API</h1>
         <div id="news-list"></div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
@@ -28,8 +28,8 @@
             //     }
 
 
-                socket.emit('openLockerStatus', lockerStatus);
-                socket.emit('getOrder', fromDepartment);
+            socket.emit('openLockerStatus', lockerStatus);
+            socket.emit('getOrder', fromDepartment);
             // });
         </script>
     </body>
