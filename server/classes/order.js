@@ -18,7 +18,7 @@ class Order {
             'status': status
         }
         client.publish('orderStatus',JSON.stringify(message));
-        const query = 'UPDATE "order" SET "status" = '+ status +' WHERE "order"."orderID" = \''+ this.orderID +'\'';
+        const query = 'UPDATE "order" SET "status" = \''+ status +'\' WHERE "order"."orderID" = \''+ this.orderID +'\'';
         pool.query(query,(error,result)=>{
             if(error){
                 throw error;
