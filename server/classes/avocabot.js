@@ -139,6 +139,12 @@ class Avocabot {
             this.lockerIsOpen = true;
             let message = this.currentDestination.destination + 'OFF';
             client.publish(prefix+'controlBell',message);
+            //Update order status
+            let purpose = this.currentDestination.purpose;
+            let currentOrder = this.currentDestination.order;
+            if(purpose == this.controller.purpose.DELIVER) {
+              currentOrder.updateStatus(orderStatus.COMPLETE);
+            }
           }
       })
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
