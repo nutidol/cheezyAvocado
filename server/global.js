@@ -55,9 +55,9 @@ client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
 orderStatus = {
   PENDING :'pending',
   APPROVED : 'approved',
-  READY : 'ready to be sent',
   ONTHEWAY : 'on the way',
-  ARRIVED : 'complete',
+  ARRIVED : 'arrived',
+  COMPLETE : 'complete',
   MISSED : 'missed'
 };
 
