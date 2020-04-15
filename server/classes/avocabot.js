@@ -61,7 +61,7 @@ class Avocabot {
             //Update status
             //this.currentDestination.order.updateStatus(Order.status.MISSED);
             this.goTo(destination);
-          },180000);
+          },180000); //Avocabot returns home if guest does not press 'Open Avocabot' within 3 mins
         }
 
       }else if(this.instructionPointer < this.instructions.length){
@@ -137,13 +137,15 @@ class Avocabot {
         if(topic == 'lockerIsOpen') {
             console.log(topic);
             this.lockerIsOpen = true;
+            let message = this.currentDestination.destination + 'OFF';
+            client.publish(prefix+'controlBell',message);
           }
       })
       if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
         clearInterval(this.currentTimeout);
         this.currentTimeout = setTimeout(()=>{
           this.controller.retrieveFromQueue();
-        },30000);
+        },60000);
       }
     }
 
@@ -154,7 +156,6 @@ class Avocabot {
         console.warn('Someone is trying to close the locker while the avocabot is not at the destination!');
         return;
       }
-
       this.callReturnRobot = false;
       //MQTT: turn light off
       client.publish(prefix+'closeLocker');
