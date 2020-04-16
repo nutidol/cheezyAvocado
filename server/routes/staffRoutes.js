@@ -52,6 +52,7 @@ router.get('/getFoodOrders', (req, res) => {
                 'amount': currentObject.amount
             });
             currentOrderID = currentObject.orderID;
+            let status = currentObject.status;
             if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
@@ -67,7 +68,8 @@ router.get('/getFoodOrders', (req, res) => {
                     'orderID': currentOrderID,
                     'roomNumber': currentObject.roomNumber,
                     'timestamp': timestamp,
-                    'orders': foodList
+                    'orders': foodList,
+                    'status' : status
                 });
                 foodList = [];
                 currentOrderID = nextObject.orderID;
@@ -98,6 +100,7 @@ router.get('/getAmenityOrders', (req, res) => {
                 'amount': currentObject.amount
             });
             currentOrderID = currentObject.orderID;
+            let status = currentObject.status;
             if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
@@ -113,7 +116,8 @@ router.get('/getAmenityOrders', (req, res) => {
                     'orderID': currentOrderID,
                     'roomNumber': currentObject.roomNumber,
                     'timestamp': timestamp,
-                    'orders': amenityList
+                    'orders': amenityList,
+                    'status' : status
                 });
                 amenityList = [];
                 currentOrderID = nextObject.orderID;
