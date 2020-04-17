@@ -137,7 +137,7 @@ const authenticatedStaff = (req,res,next) => {
 
 router.post('/staff', (req,res) =>{
     const {department, password} = req.body;
-    const query = 'SELECT * FROM department,room WHERE \"departmentName\"=\''+department+'\'';
+    const query = 'SELECT * FROM department WHERE \"departmentName\"=\''+department+'\'';
 
     pool.query(query, (error, results) => {
         if (error) {
