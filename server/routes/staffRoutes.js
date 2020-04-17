@@ -162,8 +162,25 @@ router.get('/foodFinished', (req, res, next) => {
     if(!req.query.orderID) {
         res.send('parameter is missing');
     }
-    //Call avocabot
+    //update order status
     let orderID = req.query.orderID;
+    const query1 = 'UPDATE "order" SET "status" = \'on the way to department\' WHERE \"orderID\" = \''+orderID+'\'';
+    pool.query(query1, (error, results) => {
+        if (error) {
+            res.send('error'); 
+            console.log(error);
+            throw error
+        }
+        console.log('status updated to on the way to department!');
+        //console.log(results)
+    });
+    let message = {
+        'orderID': orderID,
+        'status': orderStatus.ONTHEWAYDEPARTMENT
+    }
+    //Publish order status to guest's app
+    client.publish('orderStatus',JSON.stringify(message));
+    //Call avocabot
     let departmentName;
     let roomNumber;
     const query = 'select "department"."departmentName", "order"."roomNumber" from "order" , "department" WHERE "order"."orderID" = \''+orderID+'\' and "department"."departmentID" = "order"."departmentID"'

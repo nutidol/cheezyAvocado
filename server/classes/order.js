@@ -23,7 +23,7 @@ class Order {
             if(error){
                 throw error;
             }
-            console.log('the order status has been updated in the database');
+            console.log('the order status has been updated to '+ status +' in the database');
         });
     }
 }

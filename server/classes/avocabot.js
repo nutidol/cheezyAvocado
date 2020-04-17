@@ -47,6 +47,9 @@ class Avocabot {
         if(purpose == this.controller.purpose.DELIVER) {
           currentOrder.updateStatus(orderStatus.ARRIVED);
         }
+        if(purpose == this.controller.purpose.PICKUP) {
+          currentOrder.updateStatus(orderStatus.ARRIVEDDEPARTMENT);
+        }
         //MQTT: Ring bell
         let destination = this.currentDestination.destination;
         let message = destination + 'ON';
