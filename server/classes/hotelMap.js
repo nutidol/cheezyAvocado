@@ -11,7 +11,7 @@ class HotelMap {
         'H' : [{instruction: 'F35', newPosition: 'H'}],
         'I' : [],
         'J' : [{instruction: 'B30', newPosition: 'J'}],
-        'K' : [{instruction: 'I', newPosition: 'K'}]
+        'K' : [{instruction: 'B30', newPosition: 'J'},{instruction: 'R', newPosition:'J'},{instruction: 'B32.5', newPosition: 'K'}]
     };
 
     reverse = {
@@ -28,11 +28,7 @@ class HotelMap {
         let base = this.instructionsFromNodeI[destinationNode];
         if(currentNode == 'I') return base;
         if(currentNode == 'J') return this.getInstructionsToNodeI('J').concat([...base]); //Beware of recursion
-        if(currentNode == 'K') {
-            let x = [...base];
-            x.unshift({instruction: 'O', newPosition: 'I'});
-            return x;
-        }
+        if(currentNode == 'K') return this.getInstructionsToNodeI('K').concat([...base]);
         let reversedBase = this.getInstructionsToNodeI(currentNode);
         if(destinationNode == 'I') return reversedBase;
         if(destinationNode == 'J') return [...reversedBase].concat(this.instructionsFromNodeI['J']);
