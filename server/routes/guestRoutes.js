@@ -254,13 +254,21 @@ function getUnique(array){
 
 //openRobotLocker
 router.get('/openLocker', (req, res, next) => {
-    avocabot.openLocker() 
+    try {
+    avocabot.openLocker();
     res.send('OK'); //Every HTTP Get has to have some response.
+    } catch (err) {
+        res.status(400).send("error");//ignore internal server 500 for frontend to easily implement
+    }
 });
 
 router.get('/returnRobot', (req,res,next)=> {
+    try {
     avocabot.sendAvocabot();
     res.send('OK'); //Every HTTP Get has to have some response.
+    } catch (err) {
+        res.status(400).send("error");
+    }
 })
 
 

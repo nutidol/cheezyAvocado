@@ -15,7 +15,7 @@ const io = require('../config/server').io
 
 // test route
 router.get('/', (req, res) => {
-    res.send('this is from server file!');
+    res.send('this is from staff file!');
 });
 
 io.on('connection', function (socket) {
@@ -33,7 +33,7 @@ io.on('connection', function (socket) {
 router.get('/getFoodOrders', (req, res) => {
     let query = 'select "order"."orderID","order"."roomNumber","food"."foodName","orderFood"."amount","order"."timestamp","order"."status"' +
                 'from "order","orderFood","food"' + 
-                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')'
+                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\' or "order"."status" = \'arrived\' or "order"."status" = \'arrived at department\' or "order"."status" = \'on the way to department\' )'
     pool.query(query, (error, results) => {
         if (error) {
             res.send('error'); 
@@ -52,6 +52,7 @@ router.get('/getFoodOrders', (req, res) => {
                 'amount': currentObject.amount
             });
             currentOrderID = currentObject.orderID;
+            let status = currentObject.status;
             if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
@@ -67,7 +68,8 @@ router.get('/getFoodOrders', (req, res) => {
                     'orderID': currentOrderID,
                     'roomNumber': currentObject.roomNumber,
                     'timestamp': timestamp,
-                    'orders': foodList
+                    'orders': foodList,
+                    'status' : status
                 });
                 foodList = [];
                 currentOrderID = nextObject.orderID;
@@ -79,7 +81,7 @@ router.get('/getFoodOrders', (req, res) => {
 
 
 router.get('/getAmenityOrders', (req, res) => {
-    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\')';
+    const query = 'SELECT "order"."roomNumber","order"."orderID","amenity"."amenityName","orderAmenity"."amount","order"."timestamp","order"."status" FROM "order","orderAmenity","amenity" WHERE "order"."orderID"="orderAmenity"."orderID" and "orderAmenity"."amenityID"="amenity"."amenityID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\' or "order"."status" = \'arrived\' or "order"."status" = \'arrived at department\' or "order"."status" = \'on the way to department\' )';
     pool.query(query, (error, results) => {
         if (error) {
             res.send('error'); 
@@ -98,6 +100,7 @@ router.get('/getAmenityOrders', (req, res) => {
                 'amount': currentObject.amount
             });
             currentOrderID = currentObject.orderID;
+            let status = currentObject.status;
             if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
@@ -113,7 +116,8 @@ router.get('/getAmenityOrders', (req, res) => {
                     'orderID': currentOrderID,
                     'roomNumber': currentObject.roomNumber,
                     'timestamp': timestamp,
-                    'orders': amenityList
+                    'orders': amenityList,
+                    'status' : status
                 });
                 amenityList = [];
                 currentOrderID = nextObject.orderID;
@@ -158,8 +162,25 @@ router.get('/foodFinished', (req, res, next) => {
     if(!req.query.orderID) {
         res.send('parameter is missing');
     }
-    //Call avocabot
+    //update order status
     let orderID = req.query.orderID;
+    const query1 = 'UPDATE "order" SET "status" = \'on the way to department\' WHERE \"orderID\" = \''+orderID+'\'';
+    pool.query(query1, (error, results) => {
+        if (error) {
+            res.send('error'); 
+            console.log(error);
+            throw error
+        }
+        console.log('status updated to on the way to department!');
+        //console.log(results)
+    });
+    let message = {
+        'orderID': orderID,
+        'status': orderStatus.ONTHEWAYDEPARTMENT
+    }
+    //Publish order status to guest's app
+    client.publish('orderStatus',JSON.stringify(message));
+    //Call avocabot
     let departmentName;
     let roomNumber;
     const query = 'select "department"."departmentName", "order"."roomNumber" from "order" , "department" WHERE "order"."orderID" = \''+orderID+'\' and "department"."departmentID" = "order"."departmentID"'
@@ -208,8 +229,12 @@ router.get('/sendAvocabot', (req, res) => {
 });
 
 router.get('/openLocker', (req, res, next) => {
+    try {
     avocabot.openLocker() 
     res.send('OK'); //Every HTTP Get has to have some response.
+    } catch (err) {
+        res.status(400).send("error");
+    }
 });
 
 module.exports = router;

@@ -1,4 +1,5 @@
 require('../global');
+const { pool } = require('../config/config');
 
 class Order {
 
@@ -17,6 +18,13 @@ class Order {
             'status': status
         }
         client.publish('orderStatus',JSON.stringify(message));
+        const query = 'UPDATE "order" SET "status" = \''+ status +'\' WHERE "order"."orderID" = \''+ this.orderID +'\'';
+        pool.query(query,(error,result)=>{
+            if(error){
+                throw error;
+            }
+            console.log('the order status has been updated to '+ status +' in the database');
+        });
     }
 }
 
