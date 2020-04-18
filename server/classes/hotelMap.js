@@ -11,7 +11,7 @@ class HotelMap {
         'H' : [{instruction: 'F35', newPosition: 'H'}],
         'I' : [],
         'J' : [{instruction: 'B30', newPosition: 'J'}],
-        'K' : [{instruction: 'B30', newPosition: 'J'},{instruction: 'R', newPosition:'J'},{instruction: 'B32.5', newPosition: 'K'}]
+        'K' : [{instruction: 'B30', newPosition: 'J'},{instruction: 'R', newPosition:'J'},{instruction: 'B28', newPosition: 'K'}]
     };
 
     reverse = {
