@@ -152,7 +152,8 @@ class Avocabot {
             if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
               clearInterval(this.currentTimeout);
               this.currentTimeout = setTimeout(()=>{
-                this.controller.retrieveFromQueue();
+                this.sendAvocabot();
+                //this.controller.retrieveFromQueue();
               },60000);
             }
           }
