@@ -112,7 +112,6 @@ router.get('/getAmenityOrders', (req, res) => {
         let amenityList = [];
         console.log(orders.length);
         for(let i=0;i<orders.length;i++) {
-            console.log('in here na eiei round -------' + i+ '----------------');
             let currentObject = orders[i];
             let nextObject = orders[i+1];
             amenityList.push({
@@ -125,7 +124,6 @@ router.get('/getAmenityOrders', (req, res) => {
             console.log('nextObject:  '+ nextObject);
             if(nextObject){
                 if(nextObject.orderID != currentOrderID) {
-                    console.log('in here na eieieieiei');
                     const currentTS = currentObject.timestamp
                     var date_ob = new Date(currentTS);
                     var year = date_ob.getFullYear();
@@ -140,10 +138,10 @@ router.get('/getAmenityOrders', (req, res) => {
                         'orderID': currentOrderID,
                         'roomNumber': currentObject.roomNumber,
                         'timestamp': timestamp,
-                        'orders': amenityName,
+                        'orders': amenityList,
                         'status' : status
                     });
-                    foodList = [];
+                    amenityList = [];
                     currentOrderID = nextObject.orderID;
                 }
             }else{
