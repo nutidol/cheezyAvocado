@@ -53,7 +53,28 @@ router.get('/getFoodOrders', (req, res) => {
             });
             currentOrderID = currentObject.orderID;
             let status = currentObject.status;
-            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+            if(nextObject){
+                if(nextObject.orderID != currentOrderID) {
+                    const currentTS = currentObject.timestamp
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    
+                    list.push({
+                        'orderID': currentOrderID,
+                        'roomNumber': currentObject.roomNumber,
+                        'timestamp': timestamp,
+                        'orders': foodList,
+                        'status' : status
+                    });
+                    foodList = [];
+                }
+            }else{
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
                 var year = date_ob.getFullYear();
