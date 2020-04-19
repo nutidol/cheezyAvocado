@@ -42,9 +42,6 @@ router.get('/getBillPayments', (req, res, next) => {
             throw error
           }
         // console.log(results);
-        if(result.rows[0]== undefined){
-            res.status(200).json([]);
-        }
         const totalAmount = results.rows[0].totalAmount;
         invoicenumber=results.rows[0].invoiceNumber;
         console.log('the invoice number is ' + invoicenumber);
@@ -55,9 +52,6 @@ router.get('/getBillPayments', (req, res, next) => {
         pool.query(query2, (error, results1) => {
             if (error) {
                 throw error
-            }
-            if(result1.rows[0]== undefined){
-                res.status(200).json([]);
             }
             console.log(results1.rows[0]);
             const currentTS = results1.rows[0].timestamp;
