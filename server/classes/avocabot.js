@@ -176,7 +176,7 @@ class Avocabot {
       //MQTT: turn light off
       client.publish(prefix+'closeLocker');
       //TODO: MQTT receive response from robot when LED is off
-      client.subscribe('lockerIsClosed')
+      client.subscribe('lockerIsClosed');
       client.on('message', (topic, message) => {
         if(topic == 'lockerIsClosed') {
           if(this.lockerIsOpen == true) {
