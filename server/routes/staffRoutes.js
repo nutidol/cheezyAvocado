@@ -195,6 +195,8 @@ router.get('/acceptOrder', (req, res) => {
         }
     //3. Publish order status to geust's app
         client.publish('orderStatus',JSON.stringify(message));
+        client.publish('frontend/updateKitchenOrder','there is a new kitchen order');
+        client.publish('frontend/updateAmenityOrder','there is a new amenity order'); 
     })
     res.status(200).json('order approved');
 });
