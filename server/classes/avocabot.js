@@ -53,6 +53,7 @@ class Avocabot {
         //MQTT: Ring bell
         let destination = this.currentDestination.destination;
         let message = destination + 'ON';
+        let missDestination = destination;
         client.publish(prefix+'controlBell',message);
         //Set timeout for 60 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
@@ -63,6 +64,8 @@ class Avocabot {
               this.currentDestination.order);
             //Update status
             //this.currentDestination.order.updateStatus(Order.status.MISSED);
+            let message1 = missDestination + 'OFF';
+            client.publish(prefix+'controlBell',message1);
             this.goTo(destination);
           },180000); //Avocabot returns home if guest does not press 'Open Avocabot' within 3 mins
         }
