@@ -42,7 +42,11 @@ router.get('/getBillPayments', (req, res, next) => {
             throw error
           }
         if(results.rowCount==0){
-            res.status(200).json([]);
+            const noBillPayment = {
+                totalAmount: 0,
+                orders: []
+            }
+            res.status(200).json(noBillPayment);
         }else{
             const totalAmount = results.rows[0].totalAmount;
         invoicenumber=results.rows[0].invoiceNumber;
@@ -56,7 +60,11 @@ router.get('/getBillPayments', (req, res, next) => {
                 throw error
             }
             if(results.rowCount==0){
-                res.status(200).json([]);
+                const noBillPayment1 = {
+                    totalAmount: 0,
+                    orders : []
+                }
+                res.status(200).json(noBillPayment1);
             }else{
                 console.log(results1.rows[0]);
             const currentTS = results1.rows[0].timestamp;
