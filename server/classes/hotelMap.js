@@ -25,6 +25,12 @@ class HotelMap {
 
     getInstructions(currentNode, destinationNode) {
         if(currentNode == destinationNode) return [];
+        if(currentNode == 'K' && destinationNode == 'J') {
+            return [{instruction: 'F28', newPosition: 'J'},{instruction: 'L', newPosition: 'J'}];
+        }
+        if(currentNode == 'J' && destinationNode == 'K') {
+            return this.reverse([{instruction: 'F28', newPosition: 'J'},{instruction: 'L', newPosition: 'J'}]);
+        }
         let base = this.instructionsFromNodeI[destinationNode];
         if(currentNode == 'I') return base;
         if(currentNode == 'J') return this.getInstructionsToNodeI('J').concat([...base]); //Beware of recursion

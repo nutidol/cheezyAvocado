@@ -127,10 +127,10 @@ app.get('/addGuest',(req,res)=> {
 // client.publish('Test','Test');
 // client.publish('test/controlBell','101ON');
 
-client.subscribe('finished',{qos:1});
+client.subscribe('test/finished',{qos:1});
 
 client.on('message', (topic, message) => {
-  if(topic == 'finished') {
+  if(topic == 'test/finished') {
     avocabot.execute();
   }
 })
