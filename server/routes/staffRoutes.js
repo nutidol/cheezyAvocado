@@ -53,7 +53,28 @@ router.get('/getFoodOrders', (req, res) => {
             });
             currentOrderID = currentObject.orderID;
             let status = currentObject.status;
-            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+            if(nextObject){
+                if(nextObject.orderID != currentOrderID) {
+                    const currentTS = currentObject.timestamp
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    
+                    list.push({
+                        'orderID': currentOrderID,
+                        'roomNumber': currentObject.roomNumber,
+                        'timestamp': timestamp,
+                        'orders': foodList,
+                        'status' : status
+                    });
+                    foodList = [];
+                }
+            }else{
                 const currentTS = currentObject.timestamp
                 var date_ob = new Date(currentTS);
                 var year = date_ob.getFullYear();
@@ -63,7 +84,6 @@ router.get('/getFoodOrders', (req, res) => {
                 var minutes = ("0" + date_ob.getMinutes()).slice(-2);
                 var seconds = ("0" + date_ob.getSeconds()).slice(-2);
                 const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-
                 list.push({
                     'orderID': currentOrderID,
                     'roomNumber': currentObject.roomNumber,
@@ -71,8 +91,6 @@ router.get('/getFoodOrders', (req, res) => {
                     'orders': foodList,
                     'status' : status
                 });
-                foodList = [];
-                currentOrderID = nextObject.orderID;
             }
         }
         res.status(200).json(list);
@@ -92,7 +110,9 @@ router.get('/getAmenityOrders', (req, res) => {
         let currentOrderID;
         let list = [];
         let amenityList = [];
+        console.log(orders.length);
         for(let i=0;i<orders.length;i++) {
+            console.log('in here na eiei round -------' + i+ '----------------');
             let currentObject = orders[i];
             let nextObject = orders[i+1];
             amenityList.push({
@@ -101,26 +121,49 @@ router.get('/getAmenityOrders', (req, res) => {
             });
             currentOrderID = currentObject.orderID;
             let status = currentObject.status;
-            if(currentOrderID && nextObject && nextObject.orderID != currentOrderID) {
+            console.log('currentOrderID: ' + currentOrderID);
+            console.log('nextObject:  '+ nextObject);
+            if(nextObject){
+                if(nextObject.orderID != currentOrderID) {
+                    console.log('in here na eieieieiei');
+                    const currentTS = currentObject.timestamp
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    
+                    list.push({
+                        'orderID': currentOrderID,
+                        'roomNumber': currentObject.roomNumber,
+                        'timestamp': timestamp,
+                        'orders': amenityName,
+                        'status' : status
+                    });
+                    foodList = [];
+                    currentOrderID = nextObject.orderID;
+                }
+            }else{
                 const currentTS = currentObject.timestamp
-                var date_ob = new Date(currentTS);
-                var year = date_ob.getFullYear();
-                var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-                var date = ("0" + date_ob.getDate()).slice(-2);
-                var hours = ("0" + date_ob.getHours()).slice(-2);
-                var minutes = ("0" + date_ob.getMinutes()).slice(-2);
-                var seconds = ("0" + date_ob.getSeconds()).slice(-2);
-                const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-
-                list.push({
-                    'orderID': currentOrderID,
-                    'roomNumber': currentObject.roomNumber,
-                    'timestamp': timestamp,
-                    'orders': amenityList,
-                    'status' : status
-                });
-                amenityList = [];
-                currentOrderID = nextObject.orderID;
+                    var date_ob = new Date(currentTS);
+                    var year = date_ob.getFullYear();
+                    var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+                    var date = ("0" + date_ob.getDate()).slice(-2);
+                    var hours = ("0" + date_ob.getHours()).slice(-2);
+                    var minutes = ("0" + date_ob.getMinutes()).slice(-2);
+                    var seconds = ("0" + date_ob.getSeconds()).slice(-2);
+                    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    
+                    list.push({
+                        'orderID': currentOrderID,
+                        'roomNumber': currentObject.roomNumber,
+                        'timestamp': timestamp,
+                        'orders': amenityList,
+                        'status' : status
+                    });
             }
         }
         res.status(200).json(list);
@@ -243,23 +286,29 @@ module.exports = router;
 
 
 router.get('/getFoodOrdersOld', (req, res) => {
-    const query = 'SELECT "roomNumber","orderID","timestamp" FROM "order" WHERE status = \'pending\' or status = \'approved\' or status = \'on the way\''
+    console.log('in here');
+    const query = 'SELECT "roomNumber","orderID","timestamp",status FROM "order" WHERE status =\'pending\' or status =\'approved\' or status = \'on the way\' or status = \'arrived\' or status = \'arrived at department\' or status = \'on the way to department\''
     pool.query(query, (error, results)=>{
         if(error){
             throw error
         }
         let value = []; 
         const rows = results.rowCount;
+        console.log(results)
         for(let i=0; i<results.rowCount; i++){
+            console.log('in here 2');
             // console.log(results.rows[i]);
             // const currentOrderID = results.rows[i].orderID
             // const currentRoomNumber = results.rows[i].roomNumber
             const query1 = 'SELECT "foodName","amount" FROM "orderFood","food" WHERE "orderFood"."orderID" = \''+ results.rows[i].orderID +'\' and "orderFood"."foodID"="food"."foodID"'
             // console.log(query1); 
             pool.query(query1, (error, results2)=>{
+                    console.log('in here 1');
                     const currentOrderID = results.rows[i].orderID
                     const currentRoomNumber = results.rows[i].roomNumber
                     const currentTS = results.rows[i].timestamp
+                    const currentStatus = results.rows[i].status;
+
                     var date_ob = new Date(currentTS);
                     var year = date_ob.getFullYear();
                     var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
@@ -276,7 +325,8 @@ router.get('/getFoodOrdersOld', (req, res) => {
                         orderID : currentOrderID,
                         roomNumber : currentRoomNumber,
                         timestamp: timestamp,
-                        orders : results2.rows
+                        orders : results2.rows,
+                        status: currentStatus
                     };
                     value = [...value, orderInfo];
                     if(i== results.rowCount-1){
