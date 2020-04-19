@@ -63,5 +63,5 @@ orderStatus = {
   MISSED : 'missed'
 };
 
-testingMode = true;
+testingMode = false;
 prefix = testingMode ? "test/" : "" ;
