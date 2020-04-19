@@ -140,7 +140,7 @@ router.get('/getAmenityOrders', (req, res) => {
                         'orderID': currentOrderID,
                         'roomNumber': currentObject.roomNumber,
                         'timestamp': timestamp,
-                        'orders': amenityName,
+                        'orders': amenityList,
                         'status' : status
                     });
                     foodList = [];
