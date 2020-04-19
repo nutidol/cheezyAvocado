@@ -148,14 +148,15 @@ class Avocabot {
             if(purpose == this.controller.purpose.DELIVER) {
               currentOrder.updateStatus(orderStatus.COMPLETE);
             }
+            if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
+              clearInterval(this.currentTimeout);
+              this.currentTimeout = setTimeout(()=>{
+                this.controller.retrieveFromQueue();
+              },60000);
+            }
           }
       })
-      if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
-        clearInterval(this.currentTimeout);
-        this.currentTimeout = setTimeout(()=>{
-          this.controller.retrieveFromQueue();
-        },60000);
-      }
+     
     }
 
     sendAvocabot() {
