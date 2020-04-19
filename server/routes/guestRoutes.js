@@ -104,7 +104,7 @@ router.get('/getBillPayments', (req, res, next) => {
                             price: results.rows[j].price
                         }
                         subOrders = [...subOrders, subOrder];
-                        totalOrderCost = results.rows[j].price * results.rows[j].amount+ totalOrderCost;
+                        totalOrderCost = results.rows[j].price * results.rows[j].amount + totalOrderCost;
                         console.log('the total price is '+ totalOrderCost);
                         console.log('order looks like this '+ subOrders);
                         if(j == results.rows.length-1){
@@ -117,6 +117,8 @@ router.get('/getBillPayments', (req, res, next) => {
                             console.log('this is what an order look like');
                             console.log(order);
                             orders = [...orders, order];
+                            subOrders = [];
+                            totalOrderCost = 0;
                             console.log('this is what orders look like ' + orders);
                             totalBillAmount = totalOrderCost + totalBillAmount;
                             if(i == numberOfRows-1){
