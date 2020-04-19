@@ -13,7 +13,7 @@ class Avocabot {
     currentTimeout;
     controller;
     hotelMap;
-    lockerIsOpen;
+    lockerIsOpen = false;
     callReturnRobot;
 
     constructor(currentPosition, hotelMap) { //currentPosition as a character notation.
@@ -138,6 +138,7 @@ class Avocabot {
       client.subscribe('lockerIsOpen');
       client.on('message', (topic, message) => {
         if(topic == 'lockerIsOpen') {
+          if(this.lockerIsOpen == false) {
             console.log(topic);
             this.lockerIsOpen = true;
             let message = this.currentDestination.destination + 'OFF';
@@ -148,14 +149,16 @@ class Avocabot {
             if(purpose == this.controller.purpose.DELIVER) {
               currentOrder.updateStatus(orderStatus.COMPLETE);
             }
+            if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
+              clearInterval(this.currentTimeout);
+              this.currentTimeout = setTimeout(()=>{
+                this.controller.retrieveFromQueue();
+              },60000);
+            }
           }
+        }
       })
-      if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
-        clearInterval(this.currentTimeout);
-        this.currentTimeout = setTimeout(()=>{
-          this.controller.retrieveFromQueue();
-        },60000);
-      }
+     
     }
 
     sendAvocabot() {
@@ -172,11 +175,13 @@ class Avocabot {
       client.subscribe('lockerIsClosed')
       client.on('message', (topic, message) => {
         if(topic == 'lockerIsClosed') {
-          console.log(topic);
-          this.lockerIsOpen = false;
-          this.callReturnRobot = true;
-          clearInterval(this.currentTimeout);
-          this.controller.retrieveFromQueue();
+          if(this.lockerIsOpen == true) {
+            console.log(topic);
+            this.lockerIsOpen = false;
+            this.callReturnRobot = true;
+            clearInterval(this.currentTimeout);
+            this.controller.retrieveFromQueue();
+          }
         }
       })
     }
