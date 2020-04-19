@@ -25,6 +25,8 @@ class Order {
             }
             console.log('the order status has been updated to '+ status +' in the database');
         });
+        client.publish('frontend/updateKitchenOrder','there is a new kitchen order');
+        client.publish('frontend/updateAmenityOrder','there is a new amenity order'); 
     }
 }
 
