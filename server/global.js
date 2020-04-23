@@ -1,9 +1,3 @@
-// const GraphNode = require('./classes/graph/graphNode');
-// const Graph = require('./classes/graph/graph');
-
-// let A = new GraphNode('A',[{'B':'S30'}]);
-// let B = new GraphNode('B',[{'A':'N30'},{'C':'S35'}]);
-// let C = new GraphNode('C',[{'B':'N35'},{'D':'S35'},{'H':'E75'}]);
 const Avocabot = require('./classes/avocabot');
 const Queue = require('./classes/queue');
 const HotelMap = require('./classes/hotelMap');
