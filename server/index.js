@@ -16,7 +16,6 @@ const Avocabot = require('./classes/avocabot');
 const Order = require('./classes/order');
 const Queue = require('./classes/queue');
 const HotelMap = require('./classes/hotelMap');
-const queryExample = require('./test/queryExample');
 const avocabotRoutes = require('./routes/avocabotRoutes');
 
 
@@ -31,7 +30,6 @@ app.use('/guest', guestRoutes);
 app.use('/authen', authentication.router)
 app.use('/menu', menu);
 app.use('/staff', staffRoutes);
-app.use('/queryEx', queryExample);
 app.use('/avocabot', avocabotRoutes);
 
 // USE FOR MOCK UP HTML FILE > page.html
