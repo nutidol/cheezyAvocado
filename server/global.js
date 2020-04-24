@@ -57,5 +57,4 @@ orderStatus = {
   MISSED : 'missed'
 };
 
-testingMode = process.env.TEST_MODE;
-prefix = testingMode ? "test/" : "" ;
+prefix = process.env.PREFIX;
