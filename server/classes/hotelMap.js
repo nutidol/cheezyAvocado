@@ -1,11 +1,11 @@
 class HotelMap {
     
     instructionsFromNodeI = {
-        'A' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F75', newPosition: 'C'},{instruction: 'R', newPosition: 'C'},{instruction: 'F65', newPosition: 'A'}],
-        'B' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F75', newPosition: 'C'},{instruction: 'R', newPosition: 'C'},{instruction: 'F35', newPosition: 'B'}],
-        'C' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F75', newPosition: 'C'}],
-        'D' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F75', newPosition: 'C'},{instruction: 'L', newPosition: 'C'},{instruction: 'F35', newPosition: 'D'}],
-        'E' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F75', newPosition: 'C'},{instruction: 'L', newPosition: 'C'},{instruction: 'F65', newPosition: 'E'}],
+        'A' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F65', newPosition: 'C'},{instruction: 'R', newPosition: 'C'},{instruction: 'F65', newPosition: 'A'}],
+        'B' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F65', newPosition: 'C'},{instruction: 'R', newPosition: 'C'},{instruction: 'F35', newPosition: 'B'}],
+        'C' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F65', newPosition: 'C'}],
+        'D' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F65', newPosition: 'C'},{instruction: 'L', newPosition: 'C'},{instruction: 'F35', newPosition: 'D'}],
+        'E' : [{instruction: 'F35', newPosition: 'H'},{instruction: 'L', newPosition:'H'},{instruction: 'F65', newPosition: 'C'},{instruction: 'L', newPosition: 'C'},{instruction: 'F65', newPosition: 'E'}],
         'F' : [{instruction: 'F100', newPosition: 'F'}],
         'G' : [{instruction: 'F70', newPosition: 'G'}],
         'H' : [{instruction: 'F35', newPosition: 'H'}],

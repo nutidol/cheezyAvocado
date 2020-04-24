@@ -16,7 +16,6 @@ const Avocabot = require('./classes/avocabot');
 const Order = require('./classes/order');
 const Queue = require('./classes/queue');
 const HotelMap = require('./classes/hotelMap');
-const queryExample = require('./test/queryExample');
 const avocabotRoutes = require('./routes/avocabotRoutes');
 
 
@@ -31,7 +30,6 @@ app.use('/guest', guestRoutes);
 app.use('/authen', authentication.router)
 app.use('/menu', menu);
 app.use('/staff', staffRoutes);
-app.use('/queryEx', queryExample);
 app.use('/avocabot', avocabotRoutes);
 
 // USE FOR MOCK UP HTML FILE > page.html
@@ -105,28 +103,6 @@ app.get('/addGuest',(req,res)=> {
   });
 });
 
-
-//------------------------------------------------Test Cloud MQTT------------------------------------------------
-// Worked!!
-// const mqtt = require('mqtt');
-// var options = {
-//   port: 17267,
-//   host: 'mqtt://soldier.cloudmqtt.com',
-//   clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
-//   username: 'vfmquhui',
-//   password: 'yXMUCDc8eoO8',
-//   keepalive: 60,
-//   reconnectPeriod: 1000,
-//   protocolId: 'MQIsdp',
-//   protocolVersion: 3,
-//   clean: true,
-//   encoding: 'utf8'
-// };
-// const client = mqtt.connect('mqtt://soldier.cloudmqtt.com',options);
-
-// client.publish('Test','Test');
-// client.publish('test/controlBell','101ON');
-
 client.subscribe(prefix+'finished',{qos:1});
 
 client.on('message', (topic, message) => {
@@ -138,65 +114,3 @@ client.on('message', (topic, message) => {
 //------------------------------------------------Test delivery system------------------------------------------------
 // order = new Order('1111','Kitchen','101');
 // queue.addToQueue(order);
-//------------------------------------------------Test mqtt async------------------------------------------------
-
-// let client = mqtt.connect('mqtt://broker.mqttdashboard.com');
-
-// client.on('connect', function () {
-//   client.subscribe('presence', function (err) {
-//     if (!err) {
-//       client.publish('presence', 'Hello mqtt')
-//       console.log('connected!');
-//     }
-//   })
-//   client.subscribe('cheezy',(err)=>{
-//     if(!err) {
-//       console.log('subscribed to cheezy!');
-//     }
-//   })
-// });
-
-// let promise = new Promise((resolve, reject) => {
-//   client.on('message', (topic, message) => {
-//     if(topic == 'cheezy') {
-//       console.log(topic);
-//       console.log(message.toString());
-//     }
-//   })
-// });
-
-// promise.then(()=>{
-//   console.log('fulfull');
-// }).catch((err)=>{
-//   console.log(err);
-// })
-
-//------------------------------------------------Test http async------------------------------------------------
-
-
-// let promise2 = new Promise((resolve, reject) => {
-//   app.get('/testAsync',(req,res)=>{
-//     resolve();
-//     res.send('OK');
-//   });
-// });
-
-// promise2.then(()=>{
-//   console.log('fulfill');
-// }).catch((err)=>{
-//   console.log(err);
-// })
-
-// async function goTo() {
-//   for(let i=0;i<5;i++) {
-//     console.log(i);
-//     await new Promise((resolve,reject)=>{
-//       app.get('/testAsync',(req,res)=>{
-//         resolve();
-//         res.send('OK');
-//       });
-//     })
-//   }
-// }
-
-// goTo();

@@ -1,6 +1,4 @@
 const Destination = require('./destination');
-const Order = require('./order');
-const Graph = require('./graph/graph');
 require('../global');
 
 
@@ -57,13 +55,17 @@ class Avocabot {
         //Set timeout for 60 seconds -> Go back to department
         if(purpose == this.controller.purpose.DELIVER) {
           this.currentTimeout = setTimeout(()=>{
-            let destination = new Destination(
+            //MQTT: Turn off the bell
+            let message = destination + 'OFF';
+            client.publish(prefix+'controlBell',message);
+            //TODO: Update status
+            //this.currentDestination.order.updateStatus(Order.status.MISSED);
+            //Go back to department
+            let newDestination = new Destination(
               this.currentDestination.order.departmentName,
               this.controller.purpose.RETURN,
               this.currentDestination.order);
-            //Update status
-            //this.currentDestination.order.updateStatus(Order.status.MISSED);
-            this.goTo(destination);
+            this.goTo(newDestination);
           },180000); //Avocabot returns home if guest does not press 'Open Avocabot' within 3 mins
         }
 
@@ -152,7 +154,8 @@ class Avocabot {
             if(this.currentDestination.purpose == this.controller.purpose.DELIVER) {
               clearInterval(this.currentTimeout);
               this.currentTimeout = setTimeout(()=>{
-                this.controller.retrieveFromQueue();
+                this.sendAvocabot();
+                //this.controller.retrieveFromQueue();
               },60000);
             }
           }
@@ -172,7 +175,7 @@ class Avocabot {
       //MQTT: turn light off
       client.publish(prefix+'closeLocker');
       //TODO: MQTT receive response from robot when LED is off
-      client.subscribe('lockerIsClosed')
+      client.subscribe('lockerIsClosed');
       client.on('message', (topic, message) => {
         if(topic == 'lockerIsClosed') {
           if(this.lockerIsOpen == true) {
