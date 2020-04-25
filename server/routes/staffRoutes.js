@@ -33,7 +33,8 @@ io.on('connection', function (socket) {
 router.get('/getFoodOrders', (req, res) => {
     let query = 'select "order"."orderID","order"."roomNumber","food"."foodName","orderFood"."amount","order"."timestamp","order"."status"' +
                 'from "order","orderFood","food"' + 
-                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\' or "order"."status" = \'arrived\' or "order"."status" = \'arrived at department\' or "order"."status" = \'on the way to department\' )'
+                'where "orderFood"."orderID" = "order"."orderID" and "orderFood"."foodID" = "food"."foodID" and ("order"."status"=\'pending\' or "order"."status"=\'approved\' or "order"."status" = \'on the way\' or "order"."status" = \'arrived\' or "order"."status" = \'arrived at department\' or "order"."status" = \'on the way to department\' )'+
+                'order by "orderFood"."orderID" asc'
     pool.query(query, (error, results) => {
         if (error) {
             res.send('error'); 
