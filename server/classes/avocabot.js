@@ -29,6 +29,10 @@ class Avocabot {
 
     execute() {
       this.instructionPointer++;
+      if(!this.instructions) {
+        console.log('No instructions to execute!');
+        return;
+      }
       if(this.instructionPointer > this.instructions.length) {
         console.warn('Pointer is out of range');
       }
