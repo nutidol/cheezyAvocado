@@ -440,6 +440,9 @@ router.get('/cancelOrder', (req,res)=>{
                     if(error){
                         throw error
                     }
+                    if(result8.rowCount==0){
+                        res.send('invalid orderID');
+                    }
                     console.log(result8);
                     // console.log(result8.rows[0].invoiceNumber);
                     const invoiceNumber = result8.rows[0].invoiceNumber;
@@ -448,6 +451,9 @@ router.get('/cancelOrder', (req,res)=>{
                     pool.query(getTotalAmount,(error,result)=>{
                         if(error){
                             throw error
+                        }
+                        if(result.rowCount==0){
+                            res.send('invalid orderID');
                         }
                         const totalAmount = result.rows[0].totalAmount;
                         console.log('totalAmount is '+ totalAmount);
