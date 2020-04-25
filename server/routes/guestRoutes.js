@@ -395,6 +395,9 @@ router.get('/cancelOrder', (req,res)=>{
         res.send('parameter is missing');
     }
     const orderID = req.query.orderID;
+    if(orderID == ''){
+        res.send('invalid orderID');
+    }
     const checkAmenity = 'select "orderID" from "orderAmenity" where "orderID"=\''+orderID+ '\'';
     pool.query(checkAmenity, (error,result)=>{
         if(error){
