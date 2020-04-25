@@ -100,13 +100,13 @@ router.post('/guest', (req,res) =>{ //return customerID
                 if(error){
                     throw error
                 }
-                console.log(results2);
-                const {reservationID, checkInDate, checkOutDate} = results2.rows[0]
-
-                if(guestLastName == lastName && guestPassword== password){
+                if(results2.rows[0]){
+                    const {reservationID, checkInDate, checkOutDate} = results2.rows[0]
+                    if(guestLastName == lastName && guestPassword== password){
                     console.log('you\'re in ');
                     const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName, guestID: guestID, reservationID: reservationID}, accessTokenSecret)
                     res.json({accessToken,roomNumber,guestFirstName,guestLastName, guestID, reservationID});
+                    }
                 }else{
                     res.send('Incorrect data');
                 }

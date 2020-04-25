@@ -415,7 +415,7 @@ router.get('/cancelOrder', (req,res)=>{
                         throw error;
                     }
                     console.log('deleted from table order');
-                    res.send('deleted')
+                    res.send('the order has been cancelled');
                 })
             })
         }else{
