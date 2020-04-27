@@ -231,7 +231,10 @@ router.post('/placeOrder', (req,res)=>{
     const {department, order, reservationID, roomNumber,totalCost} = req.body;
     console.log(order)
     const ts = Date.now();
-    var date_ob = new Date(ts);
+    var date = new Date(ts);
+    var timeZoneFromDB = +7.00; 
+    var tzDifference = timeZoneFromDB * 60 + date.getTimezoneOffset();
+    var date_ob = new Date(date.getTime() + tzDifference * 60 * 1000);
     var year = date_ob.getFullYear();
     var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
     var date = ("0" + date_ob.getDate()).slice(-2);
