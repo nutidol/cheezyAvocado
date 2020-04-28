@@ -77,7 +77,9 @@ router.get('/', (req, res) => {
 
 router.post('/guest', (req,res) =>{ //return customerID 
     const {roomNumber, lastName, password} = req.body;
-    const query = 'SELECT * FROM "staysIn","guest" WHERE "guestLastName"=\''+lastName+'\' and \"password\"=\''+password+'\' and guest.\"guestID\"=\"staysIn\".\"guestID\" and \"roomNumber\"=\''+roomNumber+'\'';
+    var lastNameWithCap = lastName.toLowerCase();
+    lastNameWithCap = lastName.slice(0,1).toUpperCase() + lastNameWithCap.slice(1)
+    const query = 'SELECT * FROM "staysIn","guest" WHERE "guestLastName"=\''+lastNameWithCap+'\' and \"password\"=\''+password+'\' and guest.\"guestID\"=\"staysIn\".\"guestID\" and \"roomNumber\"=\''+roomNumber+'\'';
 
     pool.query(query, (error, results) => {
         if (error) {
@@ -102,7 +104,7 @@ router.post('/guest', (req,res) =>{ //return customerID
                 }
                 if(results2.rows[0]){
                     const {reservationID, checkInDate, checkOutDate} = results2.rows[0]
-                    if(guestLastName == lastName && guestPassword== password){
+                    if(guestLastName == lastNameWithCap && guestPassword== password){
                     console.log('you\'re in ');
                     const accessToken = jwt.sign({roomNumber: roomNumber, checkInDate: checkInDate, checkOutDate: checkOutDate, lastName: guestLastName, guestID: guestID, reservationID: reservationID}, accessTokenSecret)
                     res.json({accessToken,roomNumber,guestFirstName,guestLastName, guestID, reservationID});
