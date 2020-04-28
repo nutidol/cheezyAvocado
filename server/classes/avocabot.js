@@ -57,21 +57,21 @@ class Avocabot {
         let message = destination + 'ON';
         client.publish(prefix+'controlBell',message);
         //Set timeout for 60 seconds -> Go back to department
-        if(purpose == this.controller.purpose.DELIVER) {
-          this.currentTimeout = setTimeout(()=>{
-            //MQTT: Turn off the bell
-            let message = destination + 'OFF';
-            client.publish(prefix+'controlBell',message);
-            //TODO: Update status
-            //this.currentDestination.order.updateStatus(Order.status.MISSED);
-            //Go back to department
-            let newDestination = new Destination(
-              this.currentDestination.order.departmentName,
-              this.controller.purpose.RETURN,
-              this.currentDestination.order);
-            this.goTo(newDestination);
-          },180000); //Avocabot returns home if guest does not press 'Open Avocabot' within 3 mins
-        }
+        // if(purpose == this.controller.purpose.DELIVER) {
+        //   this.currentTimeout = setTimeout(()=>{
+        //     //MQTT: Turn off the bell
+        //     let message = destination + 'OFF';
+        //     client.publish(prefix+'controlBell',message);
+        //     //TODO: Update status
+        //     //this.currentDestination.order.updateStatus(Order.status.MISSED);
+        //     //Go back to department
+        //     let newDestination = new Destination(
+        //       this.currentDestination.order.departmentName,
+        //       this.controller.purpose.RETURN,
+        //       this.currentDestination.order);
+        //     this.goTo(newDestination);
+        //   },180000); //Avocabot returns home if guest does not press 'Open Avocabot' within 3 mins
+        // }
 
       }else if(this.instructionPointer < this.instructions.length){
         let mapping = {
